@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders</title>
+
+  <style>
+    body {
+      font-family: 'David Libre', Arial, sans-serif;
+      background: #fffaf0;
+      direction: rtl;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    h1 {
+      color: #1e90ff;
+      text-align: center;
+    }
+    .order {
+      background: #fff;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .order h3 {
+      margin: 0 0 10px 0;
+    }
+    .order ul {
+      margin: 5px 0;
+      padding-left: 20px;
+    }
+
+    .order button {
+      background-color: red;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+
+    button#refresh, button#clearAll {
+      background-color: #ffcc00;
+      color: #333;
+      margin-bottom: 20px;
+      margin-right: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Pedidos</h1>
+<button id="refresh">Atualizar pedidos</button>
+<button id="clearAll">Apagar todos</button>
+
+<div id="ordersContainer"></div>
+
+<script>
+async function fetchOrders(){
+  try {
+    const res = await fetch("http://localhost:3000/orders");
+    if (!res.ok) throw new Error("Erro ao buscar pedidos");
+
+    const orders = await res.json();
+    renderOrders(orders);
+  } catch (err) {
+    alert("Servidor offline ou erro de conexão!");
+    console.error(err);
+  }
+}
+
+function renderOrders(orders){
+  const container = document.getElementById("ordersContainer");
+  container.innerHTML = "";
+
+  if (orders.length === 0){
+    container.innerHTML = "<p>אין הזמנות</p>";
+    return;
+  }
+
+  orders.forEach((order, idx) => {
+    const div = document.createElement("div");
+    div.className = "order";
+
+    let html = `
+      <h3>${order.name} - ₪${order.total}</h3>
+    `;
+
+    if(order.items.length > 0){
+      html += "<strong>מנות:</strong><ul>";
+      order.items.forEach(item => {
+        html += `<li>${item.name}${item.toppings?.length ? " ("+item.toppings.join(", ")+")" : ""} - ₪${item.price + item.toppingsPrice}</li>`;
+      });
+      html += "</ul>";
+    }
+
+    if(order.drinks.length > 0){
+      html += "<strong>שתייה:</strong><ul>";
+      order.drinks.forEach(drink => {
+        html += `<li>${drink.name} - ₪${drink.price}</li>`;
+      });
+      html += "</ul>";
+    }
+
+    html += `<button onclick="removeOrder(${idx})">Apagar pedido</button>`;
+
+    div.innerHTML = html;
+    container.appendChild(div);
+  });
+}
+
+async function removeOrder(idx){
+  if (!confirm("Tem certeza que quer apagar este pedido?")) return;
+
+  try {
+    const res = await fetch(`http://localhost:3000/orders/${idx}`, {
+      method: "DELETE"
+    });
+
+    if (res.ok) fetchOrders();
+    else alert("Erro ao apagar pedido");
+  } catch(err){
+    alert("Erro ao conectar com o servidor");
+    console.error(err);
+  }
+}
+
+document.getElementById("clearAll").addEventListener("click", async ()=>{
+  if (!confirm("Tem certeza que quer apagar todos os pedidos?")) return;
+
+  try {
+    const res = await fetch("http://localhost:3000/orders", {
+      method: "DELETE"
+    });
+
+    if (res.ok) fetchOrders();
+    else alert("Erro ao apagar pedidos");
+  } catch(err){
+    alert("Erro ao conectar com o servidor");
+    console.error(err);
+  }
+});
+
+document.getElementById("refresh").addEventListener("click", fetchOrders);
+
+// Carrega pedidos ao abrir a página
+fetchOrders();
+</script>
+
+</body>
+</html>
