@@ -12,6 +12,7 @@ let orders = [];
 
 // -------------------- API --------------------
 
+// ROTAS DEVEM FICAR ANTES DO STATIC + "*"
 app.post("/orders", (req, res) => {
   const order = req.body;
   orders.push(order);
@@ -36,10 +37,8 @@ app.delete("/orders", (req, res) => {
 
 // -------------------- FRONT-END --------------------
 
-// Serve tudo dentro de /public
 app.use(express.static(path.join(__dirname, "public")));
 
-// Rota coringa — Express 5 requer STRING "*"
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public/index.html"));
 });

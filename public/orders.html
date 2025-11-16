@@ -62,7 +62,7 @@
 <script>
 async function fetchOrders(){
   try {
-    const res = await fetch("http://localhost:3000/orders");
+    const res = await fetch("/orders");
     if (!res.ok) throw new Error("Erro ao buscar pedidos");
 
     const orders = await res.json();
@@ -117,7 +117,7 @@ async function removeOrder(idx){
   if (!confirm("Tem certeza que quer apagar este pedido?")) return;
 
   try {
-    const res = await fetch(`http://localhost:3000/orders/${idx}`, {
+    const res = await fetch(`/orders/${idx}`, {
       method: "DELETE"
     });
 
@@ -133,7 +133,7 @@ document.getElementById("clearAll").addEventListener("click", async ()=>{
   if (!confirm("Tem certeza que quer apagar todos os pedidos?")) return;
 
   try {
-    const res = await fetch("http://localhost:3000/orders", {
+    const res = await fetch("/orders", {
       method: "DELETE"
     });
 
