@@ -369,9 +369,9 @@ function addQtyToCart(name, price, btn){
 <div id="orderMessage">
   ההזמנה נשלחה בהצלחה!<br>
   אנא חזרו ל-WhatsApp כדי לאשר את ההזמנה.
-  <button onclick="closeMessage()">סגור</button>
   <br><br>
-  <a href="https://wa.me/972559508114" target="_blank">
+
+  <a id="whatsappKitchen" target="_blank">
     <button>דבר עם המטבח הישראלי</button>
   </a>
 </div>
@@ -446,18 +446,39 @@ async function sendOrder(){
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(order)
     });
+
+    // Limpa carrinho e formulário
     cart = [];
     updateCart();
     document.getElementById('customerName').value = '';
     document.getElementById('customerSurname').value = '';
+
+    // Mostra a mensagem
     document.getElementById('orderMessage').style.display = 'flex';
+
+    // Atualiza automaticamente o link do WhatsApp com o nome do cliente
+    updateWhatsAppLink(name, surname);
+
   } catch(err){
     alert("Erro ao enviar o pedido! Verifique se o servidor está rodando.");
   }
 }
+</script>
 
-function closeMessage(){
-  document.getElementById('orderMessage').style.display = 'none';
+<script>
+function updateWhatsAppLink(name, surname) {
+  const message =
+    "שלום, שלחתי לכם הזמנה של אוכל על שם: " + name + " " + surname;
+
+  const phone = "972559508114";
+
+  const url =
+    "https://wa.me/" +
+    phone +
+    "?text=" +
+    encodeURIComponent(message);
+
+  document.getElementById("whatsappKitchen").href = url;
 }
 </script>
 
