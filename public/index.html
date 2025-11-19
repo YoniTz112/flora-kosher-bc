@@ -194,19 +194,21 @@ button:hover {
 /* Popup de item adicionado */
 .added-popup {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   background: #4caf50;
   color: white;
-  padding: 12px 20px;
-  border-radius: 10px;
-  font-size: 1.2em;
+  padding: 20px 30px;
+  border-radius: 15px;
+  font-size: 1.6em;
   font-weight: bold;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: 500;
 }
+
 .added-popup.show {
   opacity: 1;
 }
@@ -378,7 +380,7 @@ function showAddedPopup(){
 
   setTimeout(() => {
     popup.classList.remove("show");
-  }, 2000);
+  }, 800);
 }
 
 </script>
@@ -437,6 +439,27 @@ function addItemFromInput(btn){
 function removeFromCart(idx){
   cart.splice(idx,1);
   updateCart();
+}
+
+function addQtyToCart(name, price, btn){
+  const parent = btn.parentElement;
+  const span = parent.querySelector('.qty-control span');
+  const qty = parseInt(span.textContent);
+
+  if(qty < 1){
+    alert("בחר כמות");
+    return;
+  }
+
+  for(let i=0; i<qty; i++){
+    cart.push({ name, price, toppings: [], toppingsPrice: 0, type: "drink" });
+  }
+
+  // Zera a quantidade
+  span.textContent = "0";
+
+  updateCart();
+  showAddedPopup();
 }
 
 function updateCart(){
