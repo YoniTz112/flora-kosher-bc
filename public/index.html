@@ -255,6 +255,80 @@ button:hover {
 
 <h2>מנות עיקריות</h2>
 
+<!-- Substitua a div de Shabat existente por esta: -->
+<div id="shabatDiv" style="display:none; border: 2px solid #1e90ff; border-radius: 15px; padding: 20px; background: #f0f8ff; max-width: 600px; margin: 20px auto 40px auto; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+  <h2>לכבוד שבת</h2>
+
+  <!-- חלה לשבת -->
+  <div class="drink-container">
+    <label>חלה לשבת – 18₪</label>
+    <div class="qty-control">
+      <button onclick="changeQty(this, -1)">-</button>
+      <span>0</span>
+      <button onclick="changeQty(this, 1)">+</button>
+    </div>
+    <button onclick="addQtyToCart('חלה לשבת', 18, this)">הוסף לעגלה</button>
+  </div>
+
+  <!-- בקבוק יין (מיץ ענבים) -->
+  <div class="drink-container">
+    <label>בקבוק יין (מיץ ענבים) – 35₪</label>
+    <div class="qty-control">
+      <button onclick="changeQty(this, -1)">-</button>
+      <span>0</span>
+      <button onclick="changeQty(this, 1)">+</button>
+    </div>
+    <button onclick="addQtyToCart('בקבוק יין (מיץ ענבים)', 35, this)">הוסף לעגלה</button>
+  </div>
+
+  <!-- קופסת מטבוחה 250 גר -->
+  <div class="drink-container">
+    <label>קופסת מטבוחה (250גר) – 18₪</label>
+    <div class="qty-control">
+      <button onclick="changeQty(this, -1)">-</button>
+      <span>0</span>
+      <button onclick="changeQty(this, 1)">+</button>
+    </div>
+    <button onclick="addQtyToCart('קופסת מטבוחה (250גר)', 18, this)">הוסף לעגלה</button>
+  </div>
+
+  <!-- קופסת חומוס 250 גר -->
+  <div class="drink-container">
+    <label>קופסת חומוס (250גר) – 18₪</label>
+    <div class="qty-control">
+      <button onclick="changeQty(this, -1)">-</button>
+      <span>0</span>
+      <button onclick="changeQty(this, 1)">+</button>
+    </div>
+    <button onclick="addQtyToCart('קופסת חומוס (250גר)', 18, this)">הוסף לעגלה</button>
+  </div>
+</div>
+
+<script>
+// Verifica se Shabat está ativo e mostra a div
+async function checkShabat() {
+  try {
+    const res = await fetch('/shabat-status');
+    const data = await res.json();
+    const shabatDiv = document.getElementById('shabatDiv');
+    if(data.active) {
+      shabatDiv.style.display = 'block';
+    } else {
+      shabatDiv.style.display = 'none';
+    }
+  } catch(err) {
+    console.error("Erro ao verificar status do Shabat:", err);
+  }
+}
+
+// Chama ao carregar o index
+checkShabat();
+
+// Opcional: atualiza a cada 30 segundos caso alguém altere via /orders
+setInterval(checkShabat, 30000);
+</script>
+
+
 <!-- Schnitzel -->
 <div class="item">
   <label>שניצל בבגט – 60₪</label>

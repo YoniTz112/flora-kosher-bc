@@ -85,6 +85,7 @@
 <button id="refresh">Atualizar pedidos</button>
 <button id="clearAll">Apagar todos</button>
 <button id="generateReport">Gerar Relatório PDF</button>
+<button id="toggleSystem">Ativar/Desativar Sistema de Pedidos</button>
 
 <div id="ordersContainer"></div>
 
@@ -276,6 +277,31 @@ document.getElementById("generateReport").addEventListener("click", async ()=>{
     alert("Erro ao gerar relatório");
   }
 });
+
+let systemActive = true;
+
+document.getElementById("toggleSystem").addEventListener("click", () => {
+  systemActive = !systemActive; // alterna entre ligado/desligado
+
+  const ordersContainer = document.getElementById("ordersContainer");
+  const buttons = document.querySelectorAll("button");
+
+  if(!systemActive){
+    ordersContainer.style.display = "none";  // esconde pedidos
+    buttons.forEach(b => { 
+      if(b.id !== "toggleSystem") b.disabled = true; // desativa outros botões
+    });
+    alert("Sistema de pedidos DESATIVADO");
+  } else {
+    ordersContainer.style.display = "block";
+    buttons.forEach(b => { 
+      if(b.id !== "toggleSystem") b.disabled = false; 
+    });
+    alert("Sistema de pedidos ATIVADO");
+    fetchOrders(); // atualiza os pedidos quando ligar
+  }
+});
+
 </script>
 
 </body>
