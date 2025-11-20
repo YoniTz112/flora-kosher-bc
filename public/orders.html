@@ -43,11 +43,16 @@
       margin-top: 5px;
     }
 
-    button#refresh, button#clearAll {
+    button#refresh, button#clearAll, button#generateReport {
       background-color: #ffcc00;
       color: #333;
       margin-bottom: 20px;
       margin-right: 5px;
+    }
+
+    button#generateReport {
+      background-color: #1e90ff;
+      color: white;
     }
   </style>
 </head>
@@ -56,8 +61,11 @@
 <h1>Pedidos</h1>
 <button id="refresh">Atualizar pedidos</button>
 <button id="clearAll">Apagar todos</button>
+<button id="generateReport">Gerar Relatório PDF</button>
 
 <div id="ordersContainer"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
 async function fetchOrders(){
@@ -86,10 +94,9 @@ function renderOrders(orders){
     const div = document.createElement("div");
     div.className = "order";
 
-let html = `
-  <h3>${order.name} ${order.surname} - ₪${order.total}</h3>
-`;
-
+    let html = `
+      <h3>${order.name} ${order.surname} - ₪${order.total}</h3>
+    `;
 
     if(order.items.length > 0){
       html += "<strong>מנות:</strong><ul>";
@@ -150,6 +157,54 @@ document.getElementById("refresh").addEventListener("click", fetchOrders);
 
 // Carrega pedidos ao abrir a página
 fetchOrders();
+
+// ---------------- Relatório PDF ----------------
+document.getElementById("generateReport").addEventListener("click", async () => {
+  try {
+    const res = await fetch("/orders");
+    if (!res.ok) throw new Error("Erro ao buscar pedidos");
+    const orders = await res.json();
+
+    if (orders.length === 0) {
+      alert("Nenhum pedido para gerar relatório");
+      return;
+    }
+
+    // Agrupar pratos
+    const summary = {};
+    let totalRevenue = 0;
+    orders.forEach(order => {
+      totalRevenue += order.total;
+      order.items.forEach(item => {
+        if (!summary[item.name]) summary[item.name] = { qty: 0, revenue: 0 };
+        summary[item.name].qty += 1;
+        summary[item.name].revenue += item.price + (item.toppingsPrice || 0);
+      });
+    });
+
+    // Criar PDF
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text("Relatório Diário de Pedidos", 105, 20, null, null, "center");
+    
+    doc.setFontSize(12);
+    let y = 35;
+    for (const [name, data] of Object.entries(summary)) {
+      doc.text(`${name}: ${data.qty} pedidos - ₪${data.revenue.toFixed(2)}`, 20, y);
+      y += 10;
+    }
+
+    doc.text(`Total de pedidos: ${orders.length}`, 20, y + 10);
+    doc.text(`Lucro total: ₪${totalRevenue.toFixed(2)}`, 20, y + 20);
+
+    doc.save(`Relatorio_${new Date().toLocaleDateString()}.pdf`);
+  } catch (err) {
+    console.error(err);
+    alert("Erro ao gerar relatório");
+  }
+});
 </script>
 
 </body>

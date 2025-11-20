@@ -54,8 +54,8 @@ h2 {
 }
 
 input[type="number"], input[type="text"] {
-  padding: 5px;
-  width: 60px;
+  /*padding: 5px;*/
+  /*width: 60px;*/
   font-size: 1em;
   margin-left: 5px;
   border-radius: 5px;
@@ -212,6 +212,30 @@ button:hover {
 .added-popup.show {
   opacity: 1;
 }
+
+.input-label {
+  display: block;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 8px;
+  font-size: 1.5em;       /* Label maior */
+  color: #1e90ff;
+}
+
+.styled-input {
+  width: 100%;
+  padding: 12px 15px;      /* altura confortável, não gigante */
+  font-size: 1.2em;        /* texto maior que o normal */
+  border-radius: 10px;
+  border: 2px solid #ccc;
+  box-sizing: border-box;
+}
+
+.styled-input:focus {
+  border-color: #1e90ff;
+  box-shadow: 0 0 12px rgba(30,144,255,0.5);
+  outline: none;
+}
 </style>
 </head>
 
@@ -223,11 +247,11 @@ button:hover {
 
 <div class="container">
 
-<label>שם:</label>
-<input type="text" id="customerName" placeholder="הכנס שם" required>
+<label for="customerName" class="input-label">שם:</label>
+<input type="text" id="customerName" placeholder="הכנס שם" required class="styled-input">
 
-<label>שם משפחה:</label>
-<input type="text" id="customerSurname" placeholder="הכנס שם משפחה" required>
+<label for="customerSurname" class="input-label">שם משפחה:</label>
+<input type="text" id="customerSurname" placeholder="הכנס שם משפחה" required class="styled-input">
 
 <h2>מנות עיקריות</h2>
 
@@ -239,7 +263,7 @@ button:hover {
     <label><input type="checkbox" class="topping" data-name="חומוס" data-price="0"> חומוס</label>
     <label><input type="checkbox" class="topping" data-name="חריף" data-price="0"> חריף</label>
     <label><input type="checkbox" class="topping" data-name="סלט ישראלי" data-price="0"> סלט ישראלי</label>
-    <label><input type="checkbox" class="topping" data-name="כרוב ירוק" data-price="0"> כרוב ירוק</label>
+    <label><input type="checkbox" class="topping" data-name="כרוב לבן" data-price="0"> כרוב לבן</label>
     <label><input type="checkbox" class="topping" data-name="כרוב סגול" data-price="0"> כרוב סגול</label>
     <label><input type="checkbox" class="topping" data-name="צ’יפס בצד" data-price="7"> צ’יפס בצד (+7₪)</label>
   </div>
@@ -255,7 +279,7 @@ button:hover {
     <label><input type="checkbox" class="topping" data-name="חומוס" data-price="0"> חומוס</label>
     <label><input type="checkbox" class="topping" data-name="חריף" data-price="0"> חריף</label>
     <label><input type="checkbox" class="topping" data-name="סלט ישראלי" data-price="0"> סלט ישראלי</label>
-    <label><input type="checkbox" class="topping" data-name="כרוב ירוק" data-price="0"> כרוב ירוק</label>
+    <label><input type="checkbox" class="topping" data-name="כרוב לבן" data-price="0"> כרוב לבן</label>
     <label><input type="checkbox" class="topping" data-name="כרוב סגול" data-price="0"> כרוב סגול</label>
     <label><input type="checkbox" class="topping" data-name="צ’יפס בצד" data-price="7"> צ’יפס בצד (+7₪)</label>
   </div>
@@ -271,7 +295,7 @@ button:hover {
     <label><input type="checkbox" class="topping" data-name="חומוס"> חומוס</label>
     <label><input type="checkbox" class="topping" data-name="חריף"> חריף</label>
     <label><input type="checkbox" class="topping" data-name="סלט ישראלי"> סלט ישראלי</label>
-    <label><input type="checkbox" class="topping" data-name="כרוב ירוק"> כרוב ירוק</label>
+    <label><input type="checkbox" class="topping" data-name="כרוב לבן"> כרוב לבן</label>
     <label><input type="checkbox" class="topping" data-name="כרוב סגול"> כרוב סגול</label>
     <label><input type="checkbox" class="topping" data-name="צ’יפס בצד" data-price="7"> צ’יפס בצד (+7₪)</label>
   </div>
@@ -285,8 +309,6 @@ button:hover {
   <div class="toppings">
     <label>תוספות:</label>
     <label><input type="checkbox" class="topping" data-name="חומוס"> חומוס</label>
-    <label><input type="checkbox" class="topping" data-name="מיונז"> מיונז</label>
-    <label><input type="checkbox" class="topping" data-name="קטשופ"> קטשופ</label>
     <label><input type="checkbox" class="topping" data-name="עגבניה"> עגבניה</label>
     <label><input type="checkbox" class="topping" data-name="בצל"> בצל</label>
     <label><input type="checkbox" class="topping" data-name="חסה"> חסה</label>
