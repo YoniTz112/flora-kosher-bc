@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Orders</title>
+  <title>Pedidos</title>
 
-  <!-- Google Font hebraico -->
-  <link href="https://fonts.googleapis.com/css2?family=Alef&display=swap" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=David+Libre&family=Alef&display=swap" rel="stylesheet">
 
   <style>
     body {
@@ -54,7 +54,6 @@
       background-color: #1e90ff;
       color: white;
     }
-
     /* Fonte hebraico no relatório */
     #report {
       font-family: 'Alef', sans-serif;
@@ -70,14 +69,13 @@
 
 <div id="ordersContainer"></div>
 
-<!-- Div "oculta" para relatório -->
-<div id="report" style="position:absolute; left:-9999px;">
+<!-- Div para relatório (oculta por padrão) -->
+<div id="report" style="display:none;">
   <h1 style="text-align:center;">Relatório Diário de Pedidos</h1>
   <div id="reportContent"></div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
 <script>
 async function fetchOrders(){
   try {
@@ -95,7 +93,7 @@ function renderOrders(orders){
   const container = document.getElementById("ordersContainer");
   container.innerHTML = "";
 
-  if (orders.length === 0){
+  if(orders.length === 0){
     container.innerHTML = "<p>אין הזמנות</p>";
     return;
   }
@@ -109,7 +107,7 @@ function renderOrders(orders){
     if(order.items.length > 0){
       html += "<strong>מנות:</strong><ul>";
       order.items.forEach(item => {
-        html += `<li>${item.name}${item.toppings?.length ? " ("+item.toppings.join(", ")+")" : ""} - ₪${item.price + item.toppingsPrice}</li>`;
+        html += `<li>${item.name}${item.toppings?.length ? " ("+item.toppings.join(", ")+")" : ""} - ₪${item.price + (item.toppingsPrice || 0)}</li>`;
       });
       html += "</ul>";
     }
@@ -131,7 +129,6 @@ function renderOrders(orders){
 
 async function removeOrder(idx){
   if (!confirm("Tem certeza que quer apagar este pedido?")) return;
-
   try {
     const res = await fetch(`/orders/${idx}`, { method: "DELETE" });
     if (res.ok) fetchOrders();
@@ -144,7 +141,6 @@ async function removeOrder(idx){
 
 document.getElementById("clearAll").addEventListener("click", async ()=>{
   if (!confirm("Tem certeza que quer apagar todos os pedidos?")) return;
-
   try {
     const res = await fetch("/orders", { method: "DELETE" });
     if (res.ok) fetchOrders();
@@ -202,9 +198,12 @@ document.getElementById("generateReport").addEventListener("click", async () => 
     lucroP.textContent = `Lucro total: ₪${totalRevenue.toFixed(2)}`;
     reportContent.appendChild(lucroP);
 
-    // Gerar PDF
+    // Mostrar temporariamente o div antes de gerar PDF
     const element = document.getElementById("report");
-    html2pdf().from(element).save(`Relatorio_${new Date().toLocaleDateString()}.pdf`);
+    element.style.display = "block";
+    html2pdf().from(element).save(`Relatorio_${new Date().toLocaleDateString()}.pdf`).then(() => {
+      element.style.display = "none";
+    });
 
   } catch (err) {
     console.error(err);
