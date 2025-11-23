@@ -305,27 +305,18 @@ button:hover {
 </div>
 
 <script>
-// Verifica se Shabat está ativo e mostra a div
-async function checkShabat() {
-  try {
-    const res = await fetch('/shabat-status');
-    const data = await res.json();
-    const shabatDiv = document.getElementById('shabatDiv');
-    if(data.active) {
-      shabatDiv.style.display = 'block';
-    } else {
-      shabatDiv.style.display = 'none';
-    }
-  } catch(err) {
-    console.error("Erro ao verificar status do Shabat:", err);
+function checkShabat(){
+  const shabatStatus = localStorage.getItem("shabat");
+  const shabatDiv = document.getElementById("shabatDiv");
+
+  if(shabatStatus === "on"){
+    shabatDiv.style.display = "block";
+  } else {
+    shabatDiv.style.display = "none";
   }
 }
 
-// Chama ao carregar o index
 checkShabat();
-
-// Opcional: atualiza a cada 30 segundos caso alguém altere via /orders
-setInterval(checkShabat, 30000);
 </script>
 
 

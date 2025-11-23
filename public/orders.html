@@ -77,6 +77,17 @@
       background-color: #ffcc00;
       color: #333;
     }
+
+    /* Botões Shabat */
+    #shabatOn, #shabatOff {
+      background-color: green;
+      color: white;
+      margin-right: 5px;
+    }
+
+    #shabatOff {
+      background-color: #d9534f;
+    }
   </style>
 </head>
 <body>
@@ -86,6 +97,10 @@
 <button id="clearAll">Apagar todos</button>
 <button id="generateReport">Gerar Relatório PDF</button>
 <button id="toggleSystem">Ativar/Desativar Sistema de Pedidos</button>
+
+<!-- NOVOS BOTÕES SHABAT -->
+<button id="shabatOn">Ativar Shabat</button>
+<button id="shabatOff">Desativar Shabat</button>
 
 <div id="ordersContainer"></div>
 
@@ -97,6 +112,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
+
 async function fetchOrders(){
   try {
     const res = await fetch("/orders");
@@ -171,7 +187,9 @@ document.getElementById("clearAll").addEventListener("click", async ()=>{
 document.getElementById("refresh").addEventListener("click", fetchOrders);
 fetchOrders();
 
-// ---------------- Relatório Profissional ----------------
+/* ==========================
+      GERAR RELATÓRIO PDF
+========================== */
 document.getElementById("generateReport").addEventListener("click", async ()=>{
   try {
     const res = await fetch("/orders");
@@ -186,20 +204,19 @@ document.getElementById("generateReport").addEventListener("click", async ()=>{
     const reportContent = document.getElementById("reportContent");
     reportContent.innerHTML = "";
 
-    // Tabela detalhada de pedidos
     const table = document.createElement("table");
-    const thead = document.createElement("thead");
-    thead.innerHTML = `
-      <tr>
-        <th>Cliente</th>
-        <th>Itens</th>
-        <th>Toppings</th>
-        <th>Drinks</th>
-        <th>Preço Pedido (₪)</th>
-        <th>Hora do Pedido</th>
-      </tr>
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th>Cliente</th>
+          <th>Itens</th>
+          <th>Toppings</th>
+          <th>Drinks</th>
+          <th>Preço Pedido (₪)</th>
+          <th>Hora do Pedido</th>
+        </tr>
+      </thead>
     `;
-    table.appendChild(thead);
     const tbody = document.createElement("tbody");
 
     let totalRevenue = 0;
@@ -225,36 +242,36 @@ document.getElementById("generateReport").addEventListener("click", async ()=>{
       `;
       tbody.appendChild(tr);
     });
+
     table.appendChild(tbody);
     reportContent.appendChild(table);
 
-    // Resumo de itens para pesquisa
     const summaryTitle = document.createElement("h2");
     summaryTitle.textContent = "Resumo de Itens (Pesquisa)";
     reportContent.appendChild(summaryTitle);
 
     const summaryTable = document.createElement("table");
     summaryTable.className = "summary-table";
-    const summaryHead = document.createElement("thead");
-    summaryHead.innerHTML = `
-      <tr>
-        <th>Item</th>
-        <th>Quantidade</th>
-        <th>Receita (₪)</th>
-      </tr>
+    summaryTable.innerHTML = `
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Quantidade</th>
+          <th>Receita (₪)</th>
+        </tr>
+      </thead>
     `;
-    summaryTable.appendChild(summaryHead);
-
     const summaryBody = document.createElement("tbody");
+
     for(const [item, data] of Object.entries(itemSummary)){
       const tr = document.createElement("tr");
       tr.innerHTML = `<td>${item}</td><td>${data.qty}</td><td>${data.revenue.toFixed(2)}</td>`;
       summaryBody.appendChild(tr);
     }
+
     summaryTable.appendChild(summaryBody);
     reportContent.appendChild(summaryTable);
 
-    // Totais gerais
     const totalP = document.createElement("p");
     totalP.textContent = `Total de pedidos: ${orders.length}`;
     totalP.style.fontWeight="bold";
@@ -265,7 +282,6 @@ document.getElementById("generateReport").addEventListener("click", async ()=>{
     lucroP.style.fontWeight="bold";
     reportContent.appendChild(lucroP);
 
-    // Gerar PDF
     const element = document.getElementById("report");
     element.style.display="block";
     html2pdf().from(element).save(`Relatorio_${new Date().toLocaleDateString()}.pdf`).then(()=>{
@@ -278,28 +294,45 @@ document.getElementById("generateReport").addEventListener("click", async ()=>{
   }
 });
 
+/* ==========================
+      SISTEMA DE PEDIDOS
+========================== */
 let systemActive = true;
 
 document.getElementById("toggleSystem").addEventListener("click", () => {
-  systemActive = !systemActive; // alterna entre ligado/desligado
+  systemActive = !systemActive;
 
   const ordersContainer = document.getElementById("ordersContainer");
   const buttons = document.querySelectorAll("button");
 
   if(!systemActive){
-    ordersContainer.style.display = "none";  // esconde pedidos
+    ordersContainer.style.display = "none";
     buttons.forEach(b => { 
-      if(b.id !== "toggleSystem") b.disabled = true; // desativa outros botões
+      if(b.id !== "toggleSystem") b.disabled = true;
     });
     alert("Sistema de pedidos DESATIVADO");
   } else {
     ordersContainer.style.display = "block";
     buttons.forEach(b => { 
-      if(b.id !== "toggleSystem") b.disabled = false; 
+      if(b.id !== "toggleSystem") b.disabled = false;
     });
     alert("Sistema de pedidos ATIVADO");
-    fetchOrders(); // atualiza os pedidos quando ligar
+    fetchOrders();
   }
+});
+
+/* ==========================
+      SISTEMA DE SHABAT
+========================== */
+
+document.getElementById("shabatOn").addEventListener("click", () => {
+  localStorage.setItem("shabat", "on");
+  alert("Shabat ativado! Já aparece no cardápio.");
+});
+
+document.getElementById("shabatOff").addEventListener("click", () => {
+  localStorage.setItem("shabat", "off");
+  alert("Shabat desativado! Some do cardápio.");
 });
 
 </script>
