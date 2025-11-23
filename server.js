@@ -22,23 +22,26 @@ app.get("/shabat-status", (req, res) => {
 app.post("/shabat/on", (req, res) => {
   shabatActive = true;
   console.log("🔵 Shabat ativado");
-  res.json({ success: true, active: true });
+  res.json({ success: true, active: shabatActive });
 });
 
 // Rota para desativar
 app.post("/shabat/off", (req, res) => {
   shabatActive = false;
   console.log("⚪ Shabat desativado");
-  res.json({ success: true, active: false });
+  res.json({ success: true, active: shabatActive });
 });
 
 // -------------------- API PEDIDOS --------------------
-
 app.post("/orders", (req, res) => {
   const order = req.body;
   orders.push(order);
   console.log("Novo pedido:", order);
-  res.json({ message: "Pedido recebido!" });
+
+  // Aqui opcional: ativa o Shabat automaticamente quando chega pedido
+  // shabatActive = true;
+
+  res.json({ message: "Pedido recebido!", shabatActive });
 });
 
 app.get("/orders", (req, res) => {
@@ -57,7 +60,6 @@ app.delete("/orders", (req, res) => {
 });
 
 // -------------------- FRONT-END --------------------
-
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("*", (req, res) => {
@@ -65,9 +67,7 @@ app.get("*", (req, res) => {
 });
 
 // -------------------- Start Server --------------------
-
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
 });
-
