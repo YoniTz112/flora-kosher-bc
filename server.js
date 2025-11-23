@@ -10,9 +10,30 @@ app.use(bodyParser.json());
 // Lista de pedidos (temporária)
 let orders = [];
 
-// -------------------- API --------------------
+// -------------------- SHABAT SYSTEM --------------------
+let shabatActive = false;
 
-// ROTAS DEVEM FICAR ANTES DO STATIC + "*"
+// Rota para ver status
+app.get("/shabat-status", (req, res) => {
+  res.json({ active: shabatActive });
+});
+
+// Rota para ativar
+app.post("/shabat/on", (req, res) => {
+  shabatActive = true;
+  console.log("🔵 Shabat ativado");
+  res.json({ success: true, active: true });
+});
+
+// Rota para desativar
+app.post("/shabat/off", (req, res) => {
+  shabatActive = false;
+  console.log("⚪ Shabat desativado");
+  res.json({ success: true, active: false });
+});
+
+// -------------------- API PEDIDOS --------------------
+
 app.post("/orders", (req, res) => {
   const order = req.body;
   orders.push(order);
@@ -49,3 +70,4 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
 });
+
