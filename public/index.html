@@ -305,6 +305,8 @@ button:hover {
 </div>
 
 <script>
+// FUNÇÃO ORIGINAL: LIA DO localStorage (problema de persistência entre dispositivos)
+/*
 function checkShabat(){
   const shabatStatus = localStorage.getItem("shabat");
   const shabatDiv = document.getElementById("shabatDiv");
@@ -313,6 +315,26 @@ function checkShabat(){
     shabatDiv.style.display = "block";
   } else {
     shabatDiv.style.display = "none";
+  }
+}
+checkShabat();
+*/
+
+// FUNÇÃO CORRIGIDA: LÊ O STATUS DO SERVIDOR
+async function checkShabat(){
+  const shabatDiv = document.getElementById("shabatDiv");
+  try {
+    const res = await fetch("/shabat-status");
+    const data = await res.json();
+    
+    if(data.active){
+      shabatDiv.style.display = "block";
+    } else {
+      shabatDiv.style.display = "none";
+    }
+  } catch(err) {
+    console.error("Erro ao buscar status do Shabat:", err);
+    shabatDiv.style.display = "none"; // Garante que não aparece em caso de erro
   }
 }
 
@@ -499,17 +521,6 @@ function showAddedPopup(){
 <script>
 let cart = [];
 
-function addToCart(btn, price, name){
-  const parent = btn.parentElement;
-  const toppings = [...parent.querySelectorAll('.topping:checked')].map(t=>t.dataset.name);
-  const toppingsPrice = [...parent.querySelectorAll('.topping:checked')].reduce((sum,t)=>sum + parseInt(t.dataset.price || 0),0);
-  parent.querySelectorAll('.topping:checked').forEach(t=> t.checked = false);
-  cart.push({ name, price, toppings, toppingsPrice, type:"food" });
-  updateCart();
-
-  showAddedPopup();
-}
-
 function addItemFromInput(btn){
   const parent = btn.parentElement;
   const input = parent.querySelector('input');
@@ -530,20 +541,17 @@ function removeFromCart(idx){
 
 function addQtyToCart(name, price, btn){
   const parent = btn.parentElement;
-  const span = parent.querySelector('.qty-control span');
-  const qty = parseInt(span.textContent);
+  const qtySpan = parent.querySelector(".qty-control span");
+  const qty = parseInt(qtySpan.textContent);
 
-  if(qty < 1){
-    alert("בחר כמות");
-    return;
-  }
+  if(qty === 0) return;
 
   for(let i=0; i<qty; i++){
     cart.push({ name, price, toppings: [], toppingsPrice: 0, type: "drink" });
   }
 
   // Zera a quantidade
-  span.textContent = "0";
+  qtySpan.textContent = "0";
 
   updateCart();
   showAddedPopup();
@@ -551,22 +559,49 @@ function addQtyToCart(name, price, btn){
 
 function updateCart(){
   const cartDiv = document.getElementById("cart");
+
   if(cart.length === 0){
-    cartDiv.innerHTML = '<div class="cart-header"><span>עגלת הקניות שלי</span><button onclick="toggleCart()">X</button></div>העגלה ריקה<button style="float:left;" onclick="sendOrder()">שלח הזמנה</button>';
+    cartDiv.innerHTML = `
+      <div class="cart-header">
+        <span>עגלת הקניות שלי</span>
+        <button onclick="toggleCart()">X</button>
+      </div>
+      העגלה ריקה
+      <button style="float:left;" onclick="sendOrder()">שלח הזמנה</button>
+    `;
     return;
   }
 
-  const itemsHtml = cart.map((item,i)=>
-    `${i+1}. ${item.name}${item.toppings.length ? ' (' + item.toppings.join(', ') + ')' : ''} - ₪${item.price + item.toppingsPrice} <button onclick="removeFromCart(${i})">X</button>\n`
-  ).join("");
+  let html = `
+    <div class="cart-header">
+      <span>עגלת הקניות שלי</span>
+      <button onclick="toggleCart()">X</button>
+    </div>
+  `;
 
-  const total = cart.reduce((sum,item)=>sum + item.price + item.toppingsPrice, 0);
+  cart.forEach((item, index) => {
+    if(item.type === "qty"){
+      html += `
+        <div class="cart-item">
+          ${item.name} × ${item.qty} — ₪${item.price * item.qty}
+          <button onclick="removeFromCart(${index})">X</button>
+        </div>
+      `;
+    } else {
+      const extra = item.toppings.length ? ` (${item.toppings.join(", ")})` : "";
+      html += `
+        <div class="cart-item">
+          ${item.name}${extra} — ₪${item.price + item.toppingsPrice}
+          <button onclick="removeFromCart(${index})">X</button>
+        </div>
+      `;
+    }
+  });
 
-  cartDiv.innerHTML = `<div class="cart-header"><span>עגלת הקניות שלי</span><button onclick="toggleCart()">X</button></div>` +
-    itemsHtml + 
-    `<p style="font-weight:bold; margin-top:10px;">סה"כ: ₪${total}</p>` +
-    `<button style="float:left;" onclick="sendOrder()">שלח הזמנה</button>`;
+  html += `<button style="float:left;" onclick="sendOrder()">שלח הזמנה</button>`;
+  cartDiv.innerHTML = html;
 }
+
 
 function toggleCart(){
   document.getElementById('cart').classList.toggle('open');

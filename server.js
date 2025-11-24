@@ -2,16 +2,43 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const path = require("path");
+const fs = require("fs");
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+// -------------------- SHABAT SYSTEM PERSISTENCE --------------------
+const SHABAT_STATE_FILE = path.join(__dirname, "shabat_state.json");
+
+// Função para ler o estado do Shabat do arquivo
+function readShabatState() {
+  try {
+    if (fs.existsSync(SHABAT_STATE_FILE)) {
+      const data = fs.readFileSync(SHABAT_STATE_FILE, "utf8");
+      return JSON.parse(data).active;
+    }
+  } catch (error) {
+    console.error("Erro ao ler o estado do Shabat:", error);
+  }
+  return false; // Padrão para desativado se o arquivo não existir ou houver erro
+}
+
+// Função para escrever o estado do Shabat no arquivo
+function writeShabatState(active) {
+  try {
+    fs.writeFileSync(SHABAT_STATE_FILE, JSON.stringify({ active }), "utf8");
+    return true;
+  } catch (error) {
+    console.error("Erro ao escrever o estado do Shabat:", error);
+    return false;
+  }
+}
+
+let shabatActive = readShabatState(); // Inicializa com o estado persistido
+
 // Lista de pedidos (temporária)
 let orders = [];
-
-// -------------------- SHABAT SYSTEM --------------------
-let shabatActive = false;
 
 // Rota para ver status
 app.get("/shabat-status", (req, res) => {
@@ -21,6 +48,7 @@ app.get("/shabat-status", (req, res) => {
 // Rota para ativar
 app.post("/shabat/on", (req, res) => {
   shabatActive = true;
+  writeShabatState(shabatActive);
   console.log("🔵 Shabat ativado");
   res.json({ success: true, active: shabatActive });
 });
@@ -28,6 +56,7 @@ app.post("/shabat/on", (req, res) => {
 // Rota para desativar
 app.post("/shabat/off", (req, res) => {
   shabatActive = false;
+  writeShabatState(shabatActive);
   console.log("⚪ Shabat desativado");
   res.json({ success: true, active: shabatActive });
 });
@@ -35,11 +64,10 @@ app.post("/shabat/off", (req, res) => {
 // -------------------- API PEDIDOS --------------------
 app.post("/orders", (req, res) => {
   const order = req.body;
+  // Adiciona um timestamp ao pedido
+  order.time = new Date().toISOString();
   orders.push(order);
   console.log("Novo pedido:", order);
-
-  // Aqui opcional: ativa o Shabat automaticamente quando chega pedido
-  // shabatActive = true;
 
   res.json({ message: "Pedido recebido!", shabatActive });
 });
@@ -60,9 +88,16 @@ app.delete("/orders", (req, res) => {
 });
 
 // -------------------- FRONT-END --------------------
+// Cria um diretório 'public' e salva os arquivos HTML dentro dele
 app.use(express.static(path.join(__dirname, "public")));
 
-app.get("*", (req, res) => {
+// Rota para orders.html (administração)
+app.get("/orders.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/orders.html"));
+});
+
+// Rota principal (cardápio)
+app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public/index.html"));
 });
 
