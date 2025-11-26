@@ -145,11 +145,33 @@ button:hover {
   box-shadow: -2px 0 6px rgba(0,0,0,0.2);
   transition: left 0.3s ease;
   z-index: 150;
+  display: flex; /* Adicionado para layout flexível */
+  flex-direction: column; /* Adicionado para empilhar conteúdo */
+}
+
+.cart-content { /* Novo elemento para o conteúdo rolável */
+  flex-grow: 1;
   overflow-y: auto;
+  padding-bottom: 10px; /* Espaço antes do rodapé */
+}
+
+.cart-footer { /* Novo elemento para o rodapé fixo */
+  padding-top: 10px;
+  border-top: 1px solid #ccc;
+  background-color: #f8f1d1; /* Garante que o fundo do rodapé seja o mesmo do carrinho */
+  position: sticky; /* Fixa no final do conteúdo rolável */
+  bottom: 0;
 }
 
 .cart.open {
   left: 0;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Alinha o botão e o texto */
+  gap: 5px; /* Espaço entre o botão e o texto */
 }
 
 .cart-item button {
@@ -257,7 +279,7 @@ button:hover {
 
 <!-- Substitua a div de Shabat existente por esta: -->
 <div id="shabatDiv" style="display:none; border: 2px solid #1e90ff; border-radius: 15px; padding: 20px; background: #f0f8ff; max-width: 600px; margin: 20px auto 40px auto; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-  <h2>לכבוד שבת קודש</h2>
+  <h2>לכבוד שבת</h2>
 
   <!-- חלה לשבת -->
   <div class="drink-container">
@@ -268,6 +290,7 @@ button:hover {
       <button onclick="changeQty(this, 1)">+</button>
     </div>
     <button onclick="addQtyToCart('חלה לשבת', 18, this)">הוסף לעגלה</button>
+    <p style="color:red; font-weight:bold; margin-top:5px;">אל תשכח/י להוסיף לעגלה</p>
   </div>
 
   <!-- בקבוק יין (מיץ ענבים) -->
@@ -279,6 +302,7 @@ button:hover {
       <button onclick="changeQty(this, 1)">+</button>
     </div>
     <button onclick="addQtyToCart('בקבוק יין (מיץ ענבים)', 35, this)">הוסף לעגלה</button>
+    <p style="color:red; font-weight:bold; margin-top:5px;">אל תשכח/י להוסיף לעגלה</p>
   </div>
 
   <!-- קופסת מטבוחה 250 גר -->
@@ -290,6 +314,7 @@ button:hover {
       <button onclick="changeQty(this, 1)">+</button>
     </div>
     <button onclick="addQtyToCart('קופסת מטבוחה (250גר)', 18, this)">הוסף לעגלה</button>
+    <p style="color:red; font-weight:bold; margin-top:5px;">אל תשכח/י להוסיף לעגלה</p>
   </div>
 
   <!-- קופסת חומוס 250 גר -->
@@ -301,6 +326,7 @@ button:hover {
       <button onclick="changeQty(this, 1)">+</button>
     </div>
     <button onclick="addQtyToCart('קופסת חומוס (250גר)', 18, this)">הוסף לעגלה</button>
+    <p style="color:red; font-weight:bold; margin-top:5px;">אל תשכח/י להוסיף לעגלה</p>
   </div>
 </div>
 
@@ -503,8 +529,12 @@ function showAddedPopup(){
     <span>עגלת הקניות שלי</span>
     <button onclick="toggleCart()">X</button>
   </div>
-  העגלה ריקה
-  <button style="float:left;" onclick="sendOrder()">שלח הזמנה</button>
+  <div id="cartContent" class="cart-content">
+    העגלה ריקה
+  </div>
+  <div id="cartFooter" class="cart-footer" style="display:none;">
+    <!-- Total e botão de envio serão injetados aqui -->
+  </div>
 </div>
 
 <!-- Order message -->
@@ -558,41 +588,29 @@ function addQtyToCart(name, price, btn){
 }
 
 function updateCart(){
-  const cartDiv = document.getElementById("cart");
+  const cartContentDiv = document.getElementById("cartContent");
+  const cartFooterDiv = document.getElementById("cartFooter");
 
   if(cart.length === 0){
-    cartDiv.innerHTML = `
-      <div class="cart-header">
-        <span>עגלת הקניות שלי</span>
-        <button onclick="toggleCart()">X</button>
-      </div>
-      העגלה ריקה
-      <button style="float:left;" onclick="sendOrder()">שלח הזמנה</button>
-    `;
+    cartContentDiv.innerHTML = "העגלה ריקה";
+    cartFooterDiv.style.display = "none";
     return;
   }
 
-  let html = `
-    <div class="cart-header">
-      <span>עגלת הקניות שלי</span>
-      <button onclick="toggleCart()">X</button>
-    </div>
-  `;
+  let contentHtml = "";
 
   cart.forEach((item, index) => {
     if(item.type === "qty"){
-      html += `
+      contentHtml += `
         <div class="cart-item">
-          ${item.name} × ${item.qty} — ₪${item.price * item.qty}
-          <button onclick="removeFromCart(${index})">X</button>
+          <button onclick="removeFromCart(${index})">X</button> ${item.name} × ${item.qty} — ₪${item.price * item.qty}
         </div>
       `;
     } else {
       const extra = item.toppings.length ? ` (${item.toppings.join(", ")})` : "";
-      html += `
+      contentHtml += `
         <div class="cart-item">
-          ${item.name}${extra} — ₪${item.price + item.toppingsPrice}
-          <button onclick="removeFromCart(${index})">X</button>
+          <button onclick="removeFromCart(${index})">X</button> ${item.name}${extra} — ₪${item.price + item.toppingsPrice}
         </div>
       `;
     }
@@ -606,13 +624,14 @@ function updateCart(){
     }
   }, 0);
 
-  html += `
-    <div style="font-size: 1.5em; font-weight: bold; margin-top: 15px; border-top: 1px solid #ccc; padding-top: 10px;">
+  cartContentDiv.innerHTML = contentHtml;
+  cartFooterDiv.style.display = "block";
+  cartFooterDiv.innerHTML = `
+    <div style="font-size: 1.5em; font-weight: bold; margin-bottom: 10px;">
       סה"כ: ₪${total.toFixed(2)}
     </div>
     <button style="float:left;" onclick="sendOrder()">שלח הזמנה</button>
   `;
-  cartDiv.innerHTML = html;
 }
 
 
