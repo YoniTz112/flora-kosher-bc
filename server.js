@@ -14,6 +14,7 @@ const translateMap = {
   "עגבניה": "Tomate",
   "בצל": "Cebola",
   "חסה": "Alface",
+  "חתוספת קציצה": "mais uma carne",
 
   // bebidas
   "קוקה קולה": "Coca",
@@ -122,6 +123,27 @@ app.post("/orders", (req, res) => {
 app.get("/orders", (req, res) => {
   res.json(orders);
 });
+
+// ==================== DELETE ONE ORDER ====================
+app.delete("/orders/:idx", (req, res) => {
+  const idx = parseInt(req.params.idx, 10);
+
+  if (isNaN(idx) || idx < 0 || idx >= orders.length) {
+    return res.status(400).json({ error: "Índice inválido" });
+  }
+
+  orders.splice(idx, 1);
+  console.log(`🗑 Pedido ${idx} apagado`);
+  res.json({ success: true });
+});
+
+// ==================== DELETE ALL ORDERS ====================
+app.delete("/orders", (req, res) => {
+  orders = [];
+  console.log("🗑 Todos os pedidos apagados");
+  res.json({ success: true });
+});
+
 // -------------------- FRONT-END --------------------
 // Cria um diretório 'public' e salva os arquivos HTML dentro dele
 app.use(express.static(path.join(__dirname, "public")));

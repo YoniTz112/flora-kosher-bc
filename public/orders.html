@@ -363,13 +363,17 @@ ITENS:
 ;
 
       const win = window.open("", "_blank");
-      win.document.write(`
+win.document.write(`
   <pre style="
     font-family: monospace;
     font-size: 26px;
     font-weight: bold;
     width: 280px;
     direction: ltr;
+
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   ">${text}</pre>
 `);
 
