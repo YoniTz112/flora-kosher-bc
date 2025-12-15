@@ -1,3 +1,36 @@
+const translateMap = {
+  // pratos
+  "שניצל בבגט": "Schnitzel",
+  "שווארמה בבגט": "Shawarma",
+  "המבורגר": "Hambúrguer",
+
+  // acompanhamentos
+  "צ’יפס בצד": "Batata frita",
+  "חומוס": "Hoummus",
+  "חריף בצד": "Pimenta",
+  "סלט ישראלי": "Salada",
+  "כרוב לבן": "Repolho verde",
+  "כרוב סגול": "Repolho roxo",
+  "עגבניה": "Tomate",
+  "בצל": "Cebola",
+  "חסה": "Alface",
+
+  // bebidas
+  "קוקה קולה": "Coca",
+  "קולה זירו": "Coca Zero",
+  "מים": "Água",
+  "סודה": "Água com gás",
+
+  // shabat
+  "חלה לשבת": "Chalá de Shabat",
+  "בקבוק יין (מיץ ענבים)": "Suco de uva",
+  "קופסת מטבוחה (250גר)": "Matbucha 250g",
+  "קופסת חומוס (250גר)": "Hoummus 250g"
+};
+
+function translate(text) {
+  return translateMap[text] || text;
+}
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -64,27 +97,25 @@ app.post("/shabat/off", (req, res) => {
 // -------------------- API PEDIDOS --------------------
 app.post("/orders", (req, res) => {
   const order = req.body;
-  // Adiciona um timestamp ao pedido
   order.time = new Date().toISOString();
+
+  // traduz itens
+  order.items = order.items.map(item => ({
+    ...item,
+    name: translate(item.name),
+    toppings: item.toppings.map(t => translate(t))
+  }));
+
+  // traduz drinks
+  order.drinks = order.drinks.map(drink => ({
+    ...drink,
+    name: translate(drink.name)
+  }));
+
   orders.push(order);
-  console.log("Novo pedido:", order);
+  console.log("🖨 Pedido traduzido para cozinha:", order);
 
-  res.json({ message: "Pedido recebido!", shabatActive });
-});
-
-app.get("/orders", (req, res) => {
-  res.json(orders);
-});
-
-app.delete("/orders/:index", (req, res) => {
-  const index = req.params.index;
-  orders.splice(index, 1);
-  res.json({ message: "Pedido removido!" });
-});
-
-app.delete("/orders", (req, res) => {
-  orders = [];
-  res.json({ message: "Todos removidos!" });
+  res.json({ message: "Pedido recebido!" });
 });
 
 // -------------------- FRONT-END --------------------

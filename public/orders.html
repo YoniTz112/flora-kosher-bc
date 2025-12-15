@@ -141,7 +141,15 @@ function renderOrders(orders){
       });
       html += "</ol>";
     }
-    html += `<button onclick="removeOrder(${idx})">Apagar pedido</button>`;
+    html += `
+  <button onclick="printOrder(${idx})" style="background:black;color:white;margin-right:5px">
+    🖨 Imprimir pedido
+  </button>
+  <button onclick="removeOrder(${idx})">
+    Apagar pedido
+  </button>
+`;
+
     div.innerHTML = html;
     container.appendChild(div);
   });
@@ -315,6 +323,65 @@ document.getElementById("shabatOff").addEventListener("click", async () => {
 
 // Busca o status inicial ao carregar a página
 updateShabatStatus();
+
+function printOrder(idx){
+  fetch("/orders")
+    .then(res => res.json())
+    .then(orders => {
+      const order = orders[idx];
+      if(!order){
+        alert("Pedido não encontrado");
+        return;
+      }
+
+      let text = `
+=========== COZINHA ===========
+Cliente: ${order.name} ${order.surname}
+Hora: ${order.time ? new Date(order.time).toLocaleTimeString() : "-"}
+
+-------------------------------
+ITENS:
+`;
+
+      order.items.forEach(item => {
+        text += `- ${item.name}\n`;
+        if(item.toppings?.length){
+          text += `  + ${item.toppings.join(", ")}\n`;
+        }
+      });
+
+      if(order.drinks.length){
+        text += `\nBEBIDAS:\n`;
+        order.drinks.forEach(d => {
+          if(d.type === "qty"){
+            text += `- ${d.name} x${d.qty}\n`;
+          } else {
+            text += `- ${d.name}\n`;
+          }
+        });
+      }
+
+      text += `
+-------------------------------
+TOTAL: ₪${order.total}
+================================
+`;
+
+      const win = window.open("", "_blank");
+      win.document.write(`
+        <pre style="
+          font-family: monospace;
+          font-size: 16px;
+          width: 280px;
+          direction: ltr;
+        ">${text}</pre>
+      `);
+      win.document.close();
+      win.focus();
+      win.print();
+    });
+}
+
 </script>
 
 </body>
