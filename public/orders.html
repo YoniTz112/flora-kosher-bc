@@ -108,20 +108,29 @@ function renderOrders(orders){
   if(orders.length === 0){ container.innerHTML = "<p>אין הזמנות</p>"; return; }
 
   orders.forEach((order, idx) => {
+    // Correção: Mover "Batata Frita" de drinks para items, se estiver incorretamente classificada
+    const batataFritaIndex = order.drinks.findIndex(d => d.name.toLowerCase().includes("batata frita"));
+    if (batataFritaIndex !== -1) {
+        const batataFrita = order.drinks.splice(batataFritaIndex, 1)[0];
+        // Ajuste o preço total do pedido se necessário, embora o total já venha do servidor
+        // Para garantir que a batata frita seja exibida como item:
+        order.items.push(batataFrita);
+    }
+
     const div = document.createElement("div");
     div.className = "order";
     // Adicionando o timestamp do pedido
     const orderTime = order.time ? new Date(order.time).toLocaleString() : 'Desconhecido';
     let html = `<h3>${order.name} ${order.surname} - ₪${order.total} - ${orderTime}</h3>`;
     if(order.items.length > 0){
-      html += "<strong>Itens:</strong><ul>";
+      html += "<strong>Itens:</strong><ol>";
       order.items.forEach(item => {
         html += `<li>${item.name}${item.toppings?.length ? " ("+item.toppings.join(", ")+")" : ""} - ₪${item.price + (item.toppingsPrice || 0)}</li>`;
       });
-      html += "</ul>";
+      html += "</ol>";
     }
     if(order.drinks.length > 0){
-      html += "<strong>Drinks:</strong><ul>";
+      html += "<strong>Drinks:</strong><ol>";
       order.drinks.forEach(drink => {
         // Corrigindo a exibição de itens com quantidade (type: "qty")
         if (drink.type === "qty") {
@@ -130,7 +139,7 @@ function renderOrders(orders){
           html += `<li>${drink.name} - ₪${drink.price}</li>`;
         }
       });
-      html += "</ul>";
+      html += "</ol>";
     }
     html += `<button onclick="removeOrder(${idx})">Apagar pedido</button>`;
     div.innerHTML = html;
