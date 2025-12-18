@@ -15,6 +15,7 @@ const translateMap = {
   "בצל": "Cebola",
   "חסה": "Alface",
   "תוספת קציצה": "Mais uma carne",
+  "רוטב צ'יפוטלה בצד": "Molho Chipotle",
 
   // bebidas
   "צ’יפס": "Batata frita",
