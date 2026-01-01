@@ -359,32 +359,64 @@ button:hover {
     <p style="color:red; font-weight:bold; margin-top:5px;">אל תשכח/י להוסיף לעגלה</p>
   </div>
 
-  <!-- ערכה לשבת -->
+ <!-- ערכה לשבת -->
 <div class="drink-container">
+
   <label>ערכה לשבת – ₪260</label>
 
-  <p style="font-size:13px; color:#555; margin:5px 0;">
+  <p style="font-size:1em; color:#555; margin:6px 0 10px;">
     ארוחת שבת ארוזה · מותאם ל־3 סועדים
   </p>
 
-  <ul style="font-size:12.5px; color:#444; margin:8px 0 10px 18px; padding:0;">
-    <li>1 בקבוק יין לקידוש</li>
-    <li>2 חלות</li>
-    <li>חומוס – 200 גרם</li>
-    <li>טחינה – 200 גרם</li>
-    <li>מטבוחה – 200 גרם</li>
-    <li>סלט ירקות</li>
-    <li>סלט כרוב</li>
-    <li>תפו״א</li>
-    <li>אורז</li>
-    <li>דגים – 3 מנות</li>
-    <li>עוף – 3 מנות</li>
-  </ul>
+  <!-- Lista organizada -->
+  <div style="
+    border:1px solid #1e90ff;
+    border-radius:8px;
+    padding:10px;
+    margin-bottom:10px;
+    background:#f9fcff;
+  ">
+    <ul style="
+      list-style:none;
+      padding:0;
+      margin:0;
+      font-size:0.95em;
+      color:#333;
+      line-height:1.6;
+    ">
+      <li>• בקבוק יין לקידוש</li>
+      <li>• 2 חלות</li>
+      <li>• חומוס – 200 גרם</li>
+      <li>• טחינה – 200 גרם</li>
+      <li>• מטבוחה – 200 גרם</li>
+      <li>• סלט ירקות</li>
+      <li>• סלט כרוב</li>
+      <li>• תפו״א</li>
+      <li>• אורז</li>
+      <li>• דגים – 3 מנות</li>
+      <li>• עוף – 3 מנות</li>
+    </ul>
+  </div>
 
-  <p style="font-size:12px; color:#666; margin-top:8px; line-height:1.4;">
-    ניתן להזמין את ערכת השבת כבר ביום חמישי ולשלם ביום חמישי.<br>
-    לתיאום משלוח – יש לשלוח הודעה החל מהשעה 09:00 בבוקר ביום שישי.
+  <!-- Aviso -->
+  <p style="
+    font-size:0.9em;
+    color:#1e90ff;
+    background:#eef6ff;
+    padding:8px;
+    border-radius:6px;
+    margin-bottom:10px;
+  ">
+    הזמנה ותשלום – ביום חמישי<br>
+    תיאום משלוח – בהודעה בלבד, מ־09:00 ביום שישי
   </p>
+
+  <!-- Quantidade (igual bebidas) -->
+  <div class="qty-control">
+    <button onclick="changeQty(this, -1)">-</button>
+    <span>0</span>
+    <button onclick="changeQty(this, 1)">+</button>
+  </div>
 
   <button onclick="addQtyToCart('ערכה לשבת', 260, this)">
     הוסף לעגלה
@@ -393,6 +425,7 @@ button:hover {
   <p style="color:red; font-weight:bold; margin-top:5px;">
     אל תשכח/י להוסיף לעגלה
   </p>
+
 </div>
 </div>
 
