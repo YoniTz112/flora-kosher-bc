@@ -475,52 +475,46 @@ function showAddedPopup(){
 </div>
 
 <script>
-let cart = [];
+let cart = JSON.parse(localStorage.getItem('mainCart') || '[]'); // Inicia com o que já estiver salvo
 
-function removeFromCart(idx){
-  cart.splice(idx,1);
-  updateCart();
-}
-
-function addQtyToCart(name, price, btn){
-  const parent = btn.parentElement;
-  const qtySpan = parent.querySelector(".qty-control span");
-  const qty = parseInt(qtySpan.textContent);
-  if(qty === 0) return;
-  for(let i=0; i<qty; i++){
-    cart.push({ name, price, toppings: [], toppingsPrice: 0, type: "drink" });
-  }
-  qtySpan.textContent = "0";
-  updateCart();
-  showAddedPopup();
-}
+window.onload = function() {
+  checkShabat();
+  updateCart(); // Garante que o carrinho carregue ao abrir a página
+};
 
 function updateCart(){
   const cartContentDiv = document.getElementById("cartContent");
   const cartFooterDiv = document.getElementById("cartFooter");
+  
+  // Salva o estado atual do carrinho no navegador
+  localStorage.setItem('mainCart', JSON.stringify(cart));
+
   if(cart.length === 0){
     cartContentDiv.innerHTML = "העגלה ריקה";
     cartFooterDiv.style.display = "none";
     return;
   }
+  
   let contentHtml = "";
   cart.forEach((item, index) => {
-    const extra = item.toppings.length ? ` (${item.toppings.join(", ")})` : "";
+    const extra = item.toppings && item.toppings.length ? ` (${item.toppings.join(", ")})` : "";
     contentHtml += `
       <div class="cart-item">
-        <button onclick="removeFromCart(${index})">X</button> ${item.name}${extra} — ₪${item.price + item.toppingsPrice}
-      </div>
-    `;
+        <button onclick="removeFromCart(${index})">X</button> ${item.name}${extra} — ₪${item.price + (item.toppingsPrice || 0)}
+      </div>`;
   });
+
   const total = cart.reduce((sum, item) => sum + item.price + (item.toppingsPrice || 0), 0);
   cartContentDiv.innerHTML = contentHtml;
   cartFooterDiv.style.display = "block";
   cartFooterDiv.innerHTML = `
-    <div style="font-size: 1.5em; font-weight: bold; margin-bottom: 10px;">
-      סה"כ: ₪${total.toFixed(2)}
-    </div>
-    <button style="float:left;" onclick="sendOrder()">שלח הזמנה</button>
-  `;
+    <div style="font-size: 1.5em; font-weight: bold; margin-bottom: 10px;">סה"כ: ₪${total.toFixed(2)}</div>
+    <button style="width:100%" onclick="sendOrder()">שלח הזמנה</button>`;
+}
+
+function removeFromCart(idx){
+  cart.splice(idx,1);
+  updateCart();
 }
 
 function toggleCart(){ document.getElementById('cart').classList.toggle('open'); }
