@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>קניות לשבת קודש</title>
+
+<style>
+/* CSS המקורי שלך עם תיקון מרכוז */
+body { font-family: 'David Libre', Arial, sans-serif; background: #fffaf0; direction: rtl; margin: 0; padding: 0; color: #333; }
+header { background-color: #1e90ff; color: white; padding: 20px; text-align: center; font-size: 2em; font-weight: bold; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+.container { padding: 20px; max-width: 600px; margin: auto; padding-bottom: 50px; }
+h2 { color: #1e90ff; margin-top: 25px; border-bottom: 2px solid #1e90ff; padding-bottom: 5px; text-align: center; }
+h1 { text-align: center; color: #1e90ff; }
+
+.drink-container { 
+  margin-bottom: 15px; 
+  border-radius: 10px; 
+  background: #fff; 
+  padding: 15px; 
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+  text-align: center; /* ממרכז את כל התוכן בתיבה */
+}
+
+.drink-container label { font-size: 1.3em; color: #00bfff; font-weight: bold; display: block; }
+
+button { 
+  background-color: #ffcc00; 
+  border: none; 
+  padding: 12px 20px; 
+  font-size: 1.2em; 
+  cursor: pointer; 
+  margin-top: 10px; 
+  border-radius: 10px; 
+  font-weight: bold; 
+  transition: 0.3s; 
+}
+button:hover { background-color: #e6b800; }
+
+.qty-control { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 10px 0; }
+.qty-control span { font-size: 1.5em; font-weight: bold; min-width: 30px; text-align: center; }
+
+.back-btn { background-color: #555; color: white; margin-bottom: 20px; font-size: 1em; padding: 10px 20px; width: auto; display: block; margin-left: auto; margin-right: auto; }
+
+/* רשימת הערכה - יישור לימין בגלל הנקודות */
+.kit-details {
+  border: 1px solid #1e90ff;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  background: #f9fcff;
+  text-align: right; 
+}
+.kit-details ul { list-style: none; padding: 0; margin: 0; font-size: 0.95em; color: #333; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<header>קניות לשבת קודש</header>
+
+<div class="container">
+  <button class="back-btn" onclick="window.location.href='/'">➔ חזרה לתפריט הראשי</button>
+
+  <h1>קניות לשבת קודש</h1>
+
+  <div class="drink-container">
+    <label>חלה לשבת – ₪18</label>
+    <div class="qty-control">
+      <button onclick="changeQty(this, -1)">-</button>
+      <span>0</span>
+      <button onclick="changeQty(this, 1)">+</button>
+    </div>
+    <button onclick="addQtyToCart('חלה לשבת', 18, this)">הוסף לעגלה</button>
+    <p style="color:red; font-weight:bold; margin-top:5px;">אל תשכח/י להוסיף לעגלה</p>
+  </div>
+
+  <div class="drink-container">
+    <label>בקבוק יין (מיץ ענבים) – ₪35</label>
+    <div class="qty-control">
+      <button onclick="changeQty(this, -1)">-</button>
+      <span>0</span>
+      <button onclick="changeQty(this, 1)">+</button>
+    </div>
+    <button onclick="addQtyToCart('בקבוק יין (מיץ ענבים)', 35, this)">הוסף לעגלה</button>
+    <p style="color:red; font-weight:bold; margin-top:5px;">אל תשכח/י להוסיף לעגלה</p>
+  </div>
+
+  <div class="drink-container">
+    <label>קופסת מטבוחה (200גר) – ₪18</label>
+    <div class="qty-control">
+      <button onclick="changeQty(this, -1)">-</button>
+      <span>0</span>
+      <button onclick="changeQty(this, 1)">+</button>
+    </div>
+    <button onclick="addQtyToCart('קופסת מטבוחה (200גר)', 18, this)">הוסף לעגלה</button>
+    <p style="color:red; font-weight:bold; margin-top:5px;">אל תשכח/י להוסיף לעגלה</p>
+  </div>
+
+  <div class="drink-container">
+    <label>קופסת חומוס (200גר) – ₪18</label>
+    <div class="qty-control">
+      <button onclick="changeQty(this, -1)">-</button>
+      <span>0</span>
+      <button onclick="changeQty(this, 1)">+</button>
+    </div>
+    <button onclick="addQtyToCart('קופסת חומוס (200גר)', 18, this)">הוסף לעגלה</button>
+    <p style="color:red; font-weight:bold; margin-top:5px;">אל תשכח/י להוסיף לעגלה</p>
+  </div>
+
+  <div class="drink-container">
+    <label>קופסת טחינה (200גר) – ₪18</label>
+    <div class="qty-control">
+      <button onclick="changeQty(this, -1)">-</button>
+      <span>0</span>
+      <button onclick="changeQty(this, 1)">+</button>
+    </div>
+    <button onclick="addQtyToCart('קופסת טחינה (200גר)', 18, this)">הוסף לעגלה</button>
+    <p style="color:red; font-weight:bold; margin-top:5px;">אל תשכח/י להוסיף לעגלה</p>
+  </div>
+
+  <div class="drink-container">
+    <label>ערכה לשבת – ₪280</label>
+    <p style="font-size:1em; color:#555; margin:6px 0 10px;">ארוחת שבת ארוזה · מותאם ל־3 סועדים</p>
+
+    <div class="kit-details">
+      <ul>
+        <li>• בקבוק יין לקידוש</li>
+        <li>• 2 חלות</li>
+        <li>• חומוס – 200 גרם</li>
+        <li>• טחינה – 200 גרם</li>
+        <li>• מטבוחה – 200 גרם</li>
+        <li>• סלט ירקות, סלט כרוב, תפו״א ואורז</li>
+        <li>• דגים – 3 מנות, עוף – 3 מנות</li>
+      </ul>
+    </div>
+
+    <p style="font-size:0.9em; color:#1e90ff; background:#eef6ff; padding:8px; border-radius:6px; margin-bottom:10px;">
+      ניתן להזמין ולשלם כבר ביום חמישי. <br>
+      לתיאום משלוח – הודעה למטבח החל מ-08:00 בשישי.
+    </p>
+
+    <div class="qty-control">
+      <button onclick="changeQty(this, -1)">-</button>
+      <span>0</span>
+      <button onclick="changeQty(this, 1)">+</button>
+    </div>
+
+    <button onclick="addQtyToCart('ערכה לשבת', 280, this)">הוסף לעגלה</button>
+    <p style="color:red; font-weight:bold; margin-top:5px;">אל תשכח/י להוסיף לעגלה</p>
+  </div>
+
+</div>
+
+<script>
+function changeQty(btn, delta){
+  const span = btn.parentElement.querySelector('span');
+  let qty = parseInt(span.textContent);
+  qty += delta;
+  if(qty < 0) qty = 0;
+  span.textContent = qty;
+}
+
+function addQtyToCart(name, price, btn){
+  const qty = parseInt(btn.parentElement.querySelector(".qty-control span").textContent);
+  if(qty === 0) return;
+
+  let cart = JSON.parse(localStorage.getItem('tempCart') || '[]');
+  for(let i=0; i<qty; i++){
+    cart.push({ name, price, toppings: [], toppingsPrice: 0, type: "drink" });
+  }
+  localStorage.setItem('tempCart', JSON.stringify(cart));
+  
+  btn.parentElement.querySelector(".qty-control span").textContent = "0";
+  alert("נוסף לעגלה! ✔");
+}
+</script>
+</body>
+</html>

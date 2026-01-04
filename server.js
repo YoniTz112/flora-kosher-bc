@@ -167,3 +167,8 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
 });
+
+// No server.js, perto das outras rotas de arquivo:
+app.get("/shabat.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/shabat.html"));
+});
