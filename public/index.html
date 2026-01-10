@@ -498,10 +498,10 @@ function updateCart(){
   let contentHtml = "";
   cart.forEach((item, index) => {
     const extra = item.toppings && item.toppings.length ? ` (${item.toppings.join(", ")})` : "";
-    contentHtml += `
-      <div class="cart-item">
-        <button onclick="removeFromCart(${index})">X</button> ${item.name}${extra} — ₪${item.price + (item.toppingsPrice || 0)}
-      </div>`;
+contentHtml += `
+  <div class="cart-item">
+    <button onclick="removeFromCart(${index})">X</button> ${item.name}${extra} x${item.quantity || 1} — ₪${item.price + (item.toppingsPrice || 0)}
+  </div>`;
   });
 
   const total = cart.reduce((sum, item) => sum + item.price + (item.toppingsPrice || 0), 0);
@@ -544,6 +544,36 @@ function updateWhatsAppLink(name, surname) {
 document.querySelectorAll('.latin-only').forEach(input => {
   input.addEventListener('input', () => { input.value = input.value.replace(/[^a-zA-Z\s]/g, ''); });
 });
+
+function addQtyToCart(name, price, btn) {
+    const container = btn.parentElement;
+    const qtySpan = container.querySelector('span');
+    let qty = parseInt(qtySpan.textContent);
+    if (qty < 1) { alert("בחר לפחות 1 פריט"); return; }
+
+    // Adiciona item ao carrinho
+    cart.push({
+        name,
+        price: price * qty,
+        toppings: [],
+        toppingsPrice: 0,
+        type: "drink",
+        quantity: qty
+    });
+
+    qtySpan.textContent = 0; // reseta quantidade
+    updateCart();
+    showAddedPopup();
+}
+
+function changeQty(btn, delta) {
+    const span = btn.parentElement.querySelector('span');
+    let qty = parseInt(span.textContent);
+    qty += delta;
+    if (qty < 0) qty = 0;
+    span.textContent = qty;
+}
+
 </script>
 
 </body>
