@@ -475,7 +475,7 @@ function showAddedPopup(){
 </div>
 
 <script>
-let cart = JSON.parse(localStorage.getItem('sharedCart') || '[]');
+let cart = JSON.parse(sessionStorage.getItem('sharedCart') || '[]');
 
 window.onload = function() {
   checkShabat();
@@ -487,7 +487,7 @@ function updateCart(){
   const cartFooterDiv = document.getElementById("cartFooter");
   
   // Salva o estado atual do carrinho no navegador
-  localStorage.setItem('sharedCart', JSON.stringify(cart));
+  sessionStorage.setItem('sharedCart', JSON.stringify(cart));
 
   if(cart.length === 0){
     cartContentDiv.innerHTML = "העגלה ריקה";

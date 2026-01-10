@@ -30,18 +30,158 @@ button:hover { background-color: #e6b800; }
 .kit-details ul { list-style: none; padding: 0; margin: 0; font-size: 1em; color: #333; line-height: 1.8; }
 
 /* CARRINHO IDENTICO AO INDEX */
-#cartToggle { position: fixed; top: 50%; left: 0; border-radius: 0 5px 5px 0; transform: translateY(-50%); background-color: #ff6600; color: white; padding: 10px 12px; cursor: pointer; z-index: 200; font-weight: bold; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
-.cart { background-color: #f8f1d1; padding: 10px; font-weight: bold; position: fixed; top: 0; left: -320px; width: 320px; height: 100%; box-shadow: -2px 0 6px rgba(0,0,0,0.2); transition: left 0.3s ease; z-index: 150; display: flex; flex-direction: column; }
-.cart.open { left: 0; }
-.cart-content { flex-grow: 1; overflow-y: auto; padding: 10px; }
-.cart-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-bottom: 10px; }
-.cart-header button { background: red; color: white; padding: 5px 10px; margin: 0; font-size: 0.8em; }
-.cart-item { display: flex; align-items: center; gap: 5px; margin-bottom: 8px; border-bottom: 1px dotted #aaa; padding-bottom: 5px; }
-.cart-item button { background-color: red; color: white; padding: 0 5px; font-size: 0.9em; border-radius: 3px; margin: 0; }
-.cart-footer { padding-top: 10px; border-top: 1px solid #ccc; }
+#cartToggle {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  border-radius: 0 5px 5px 0;
+  transform: translateY(-50%);
+  background-color: #ff6600;
+  color: white;
+  padding: 10px 12px;
+  cursor: pointer;
+  z-index: 200;
+  font-weight: bold;
+  font-size: 1em;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
 
-.added-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #4caf50; color: white; padding: 20px 30px; border-radius: 15px; font-size: 1.6em; font-weight: bold; opacity: 0; transition: opacity 0.3s ease; z-index: 500; pointer-events: none; }
-.added-popup.show { opacity: 1; }
+.cart {
+  background-color: #f8f1d1;
+  padding: 10px;
+  font-weight: bold;
+  white-space: pre-line;
+  position: fixed;
+  top: 0;
+  left: -320px;
+  width: 320px;
+  height: 100%;
+  box-shadow: -2px 0 6px rgba(0,0,0,0.2);
+  transition: left 0.3s ease;
+  z-index: 150;
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-content {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-bottom: 10px;
+}
+
+.cart-footer {
+  padding-top: 10px;
+  border-top: 1px solid #ccc;
+  background-color: #f8f1d1;
+  position: sticky;
+  bottom: 0;
+}
+
+.cart.open {
+  left: 0;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+}
+
+.cart-item button {
+  background-color: red;
+  color: white;
+  padding: 0 5px;
+  font-size: 0.9em;
+  border-radius: 3px;
+  cursor: pointer;
+}
+#orderMessage {
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.8);
+  color:white;
+  justify-content:center;
+  align-items:center;
+  font-size:2em;
+  text-align:center;
+  z-index:300;
+  padding:20px;
+  box-sizing:border-box;
+  flex-direction:column;
+}
+
+#orderMessage button {
+  margin-top:20px;
+  padding:10px 20px;
+  font-size:1em;
+  cursor:pointer;
+  background:#ffcc00;
+  border:none;
+  border-radius:5px;
+  color:#000;
+}
+
+.added-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #4caf50;
+  color: white;
+  padding: 20px 30px;
+  border-radius: 15px;
+  font-size: 1.6em;
+  font-weight: bold;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 500;
+}
+
+.added-popup.show {
+  opacity: 1;
+}
+
+.input-label {
+  display: block;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 8px;
+  font-size: 1.5em;
+  color: #1e90ff;
+}
+
+.styled-input {
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 1.2em;
+  border-radius: 10px;
+  border: 2px solid #ccc;
+  box-sizing: border-box;
+}
+
+.styled-input:focus {
+  border-color: #1e90ff;
+  box-shadow: 0 0 12px rgba(30,144,255,0.5);
+  outline: none;
+}
+
+.latin-warning {
+  color: red;
+  font-weight: bold;
+  font-size: 0.95em;
+  margin-top: 5px;
+  display: block;
+}
+
+.latin-only {
+  direction: ltr;
+}
 </style>
 </head>
 <body>
@@ -138,7 +278,7 @@ button:hover { background-color: #e6b800; }
 
 <script>
 // USAR sharedCart PARA SINCRONIZAR COM O INDEX
-let cart = JSON.parse(localStorage.getItem('sharedCart') || '[]');
+let cart = JSON.parse(sessionStorage.getItem('sharedCart') || '[]');
 
 window.onload = updateCart;
 
@@ -162,7 +302,7 @@ function addQtyToCart(name, price, btn){
 }
 
 function updateCart(){
-    localStorage.setItem('sharedCart', JSON.stringify(cart));
+    sessionStorage.setItem('sharedCart', JSON.stringify(cart));
     const content = document.getElementById("cartContent");
     const footer = document.getElementById("cartFooter");
 
