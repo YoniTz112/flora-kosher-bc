@@ -475,18 +475,29 @@ function showAddedPopup(){
 </div>
 
 <script>
-  const input = document.getElementById("nomeInput");
+  window.addEventListener("DOMContentLoaded", () => {
+  const nameInput = document.getElementById("customerName");
+  const surnameInput = document.getElementById("customerSurname");
 
-// salvar quando digitar
-input.addEventListener("input", () => {
-  sessionStorage.setItem("nome", input.value);
+  if (nameInput) {
+    const savedName = sessionStorage.getItem("customerName");
+    if (savedName) nameInput.value = savedName;
+
+    nameInput.addEventListener("input", () => {
+      sessionStorage.setItem("customerName", nameInput.value);
+    });
+  }
+
+  if (surnameInput) {
+    const savedSurname = sessionStorage.getItem("customerSurname");
+    if (savedSurname) surnameInput.value = savedSurname;
+
+    surnameInput.addEventListener("input", () => {
+      sessionStorage.setItem("customerSurname", surnameInput.value);
+    });
+  }
 });
 
-// quando a página carregar, recuperar
-window.addEventListener("load", () => {
-  const salvo = sessionStorage.getItem("nome");
-  if (salvo) input.value = salvo;
-});
 
 let cart = JSON.parse(sessionStorage.getItem('sharedCart') || '[]');
 
