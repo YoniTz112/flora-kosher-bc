@@ -41,17 +41,26 @@ h2 {
 }
 
 .item, .drink-container {
-  margin-bottom: 15px;
+margin-bottom: 15px;
   border-radius: 10px;
   background: #fff;
   padding: 10px 15px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  position: relative;
+  z-index: 5; /* Aumente um pouco */
 }
 
 .item label, .drink-container label {
   font-size: 1.3em;
   color: #00bfff;
   font-weight: bold;
+}
+
+.item button, .drink-container button {
+  position: relative; /* Necessário para o z-index funcionar */
+  z-index: 9999 !important; /* Fica acima de quase tudo */
+  cursor: pointer;
+  touch-action: manipulation; /* Remove o delay do clique no mobile */
 }
 
 button {
@@ -64,6 +73,10 @@ button {
   border-radius: 10px;
   transition: 0.3s;
   font-weight: bold;
+  position: relative; 
+  z-index: 10;
+  touch-action: manipulation; /* Otimiza o clique para mobile, removendo o delay de 300ms */
+  -webkit-tap-highlight-color: transparent; /* Remove aquele quadrado cinza ao clicar */
 }
 
 button:hover {
@@ -109,7 +122,7 @@ button:hover {
 
 /* Cart Styles */
 #cartToggle {
-  position: fixed;
+position: fixed;
   top: 50%;
   left: 0;
   border-radius: 0 5px 5px 0;
@@ -118,10 +131,9 @@ button:hover {
   color: white;
   padding: 10px 12px;
   cursor: pointer;
-  z-index: 200;
+  z-index: 3000; /* Sempre por cima de tudo */
   font-weight: bold;
-  font-size: 1em;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
 }
 
 .cart {
@@ -131,14 +143,31 @@ button:hover {
   white-space: pre-line;
   position: fixed;
   top: 0;
-  left: -320px;
+  left: -350px; /* Aumentei um pouco para garantir */
   width: 320px;
   height: 100%;
   box-shadow: -2px 0 6px rgba(0,0,0,0.2);
-  transition: left 0.3s ease;
-  z-index: 150;
-  display: flex;
+  transition: all 0.3s ease;
+  z-index: -1; /* Deve ser menor que o cartToggle, mas maior que o conteúdo */
+  display: none;
   flex-direction: column;
+  pointer-events: none;
+  visibility: hidden;
+  overflow-x: hidden; /* Evita scroll horizontal fantasma */
+}
+
+.cart.open {
+  left: 0;
+  pointer-events: auto;
+  visibility: visible;
+  z-index: 999;
+  display: flex;
+}
+
+/* Ajuste para os botões do site não ficarem "atrás" de nada invisível */
+.item, button, input {
+  position: relative;
+  z-index: 10;
 }
 
 .cart-content {
@@ -153,10 +182,6 @@ button:hover {
   background-color: #f8f1d1;
   position: sticky;
   bottom: 0;
-}
-
-.cart.open {
-  left: 0;
 }
 
 .cart-item {
@@ -261,12 +286,20 @@ button:hover {
 .latin-only {
   direction: ltr;
 }
+
+@media (max-width: 480px) {
+  .cart {
+    width: 260px;
+    left: -260px;
+  }
+}
+
 </style>
 </head>
 
-<div id="addedPopup" class="added-popup">נוסף לעגלה ✔</div>
-
 <body>
+
+  <div id="addedPopup" class="added-popup">נוסף לעגלה ✔</div>
 
 <header>תפריט המטבח הישראלי בית חב״ד פלורה</header>
 
@@ -284,7 +317,6 @@ button:hover {
  יש למלא את שם המשפחה באותיות אנגליות בלבד (A-Z)
 </small>
 
-<h2>מנות עיקריות</h2>
 
 <div id="shabatButtonContainer" style="display:none;">
   <div class="item" style="background: #eef7ff; border: 2px solid #1e90ff; text-align: center;">
@@ -293,6 +325,8 @@ button:hover {
     </button>
   </div>
 </div>
+
+<h2>מנות עיקריות</h2>
 
 <script>
 async function checkShabat(){
@@ -501,10 +535,19 @@ function showAddedPopup(){
 
 let cart = JSON.parse(sessionStorage.getItem('sharedCart') || '[]');
 
-window.onload = function() {
+window.addEventListener("load", () => {
   checkShabat();
-  updateCart(); // Garante que o carrinho carregue ao abrir a página
-};
+
+  const savedItems = localStorage.getItem('tempCart');
+  if (savedItems) {
+    const newItems = JSON.parse(savedItems);
+    cart = [...cart, ...newItems];
+    localStorage.removeItem('tempCart');
+  }
+
+  updateCart();
+});
+
 
 function updateCart(){
   const cartContentDiv = document.getElementById("cartContent");
