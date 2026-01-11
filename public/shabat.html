@@ -277,6 +277,19 @@ button:hover { background-color: #e6b800; }
 </div>
 
 <script>
+  const input = document.getElementById("nomeInput");
+
+// salvar quando digitar
+input.addEventListener("input", () => {
+  sessionStorage.setItem("nome", input.value);
+});
+
+// quando a página carregar, recuperar
+window.addEventListener("load", () => {
+  const salvo = sessionStorage.getItem("nome");
+  if (salvo) input.value = salvo;
+});
+
 // USAR sharedCart PARA SINCRONIZAR COM O INDEX
 let cart = JSON.parse(sessionStorage.getItem('sharedCart') || '[]');
 

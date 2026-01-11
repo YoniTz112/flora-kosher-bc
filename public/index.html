@@ -475,6 +475,19 @@ function showAddedPopup(){
 </div>
 
 <script>
+  const input = document.getElementById("nomeInput");
+
+// salvar quando digitar
+input.addEventListener("input", () => {
+  sessionStorage.setItem("nome", input.value);
+});
+
+// quando a página carregar, recuperar
+window.addEventListener("load", () => {
+  const salvo = sessionStorage.getItem("nome");
+  if (salvo) input.value = salvo;
+});
+
 let cart = JSON.parse(sessionStorage.getItem('sharedCart') || '[]');
 
 window.onload = function() {
