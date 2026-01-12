@@ -41,13 +41,13 @@ h2 {
 }
 
 .item, .drink-container {
-margin-bottom: 15px;
+  margin-bottom: 15px;
   border-radius: 10px;
   background: #fff;
   padding: 10px 15px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   position: relative;
-  z-index: 5; /* Aumente um pouco */
+  z-index: 1;
 }
 
 .item label, .drink-container label {
@@ -122,66 +122,48 @@ button:hover {
 
 /* Cart Styles */
 #cartToggle {
-position: fixed;
-  top: 50%;
-  left: 0;
-  border-radius: 0 5px 5px 0;
-  transform: translateY(-50%);
+  position: fixed;
+  bottom: 20px; /* Mudado para baixo para não bater nos botões laterais */
+  left: 10px;
+  border-radius: 50px;
   background-color: #ff6600;
   color: white;
-  padding: 10px 12px;
+  padding: 15px;
   cursor: pointer;
-  z-index: 3000; /* Sempre por cima de tudo */
+  z-index: 1000;
   font-weight: bold;
-  box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
 .cart {
   background-color: #f8f1d1;
   padding: 10px;
   font-weight: bold;
-  white-space: pre-line;
   position: fixed;
   top: 0;
-  left: -350px; /* Aumentei um pouco para garantir */
-  width: 320px;
+  left: -350px; /* Esconde totalmente */
+  width: 300px;
   height: 100%;
-  box-shadow: -2px 0 6px rgba(0,0,0,0.2);
-  transition: all 0.3s ease;
-  z-index: -1; /* Deve ser menor que o cartToggle, mas maior que o conteúdo */
-  display: none;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+  transition: left 0.3s ease;
+  z-index: 2000;
+  display: flex;
   flex-direction: column;
-  pointer-events: none;
-  visibility: hidden;
-  overflow-x: hidden; /* Evita scroll horizontal fantasma */
 }
 
 .cart.open {
   left: 0;
-  pointer-events: auto;
-  visibility: visible;
-  z-index: 999;
-  display: flex;
-}
-
-/* Ajuste para os botões do site não ficarem "atrás" de nada invisível */
-.item, button, input {
-  position: relative;
-  z-index: 10;
 }
 
 .cart-content {
   flex-grow: 1;
   overflow-y: auto;
-  padding-bottom: 10px;
 }
 
 .cart-footer {
-  padding-top: 10px;
+padding-top: 10px;
   border-top: 1px solid #ccc;
   background-color: #f8f1d1;
-  position: sticky;
-  bottom: 0;
 }
 
 .cart-item {
@@ -286,14 +268,6 @@ position: fixed;
 .latin-only {
   direction: ltr;
 }
-
-@media (max-width: 480px) {
-  .cart {
-    width: 260px;
-    left: -260px;
-  }
-}
-
 </style>
 </head>
 
@@ -308,13 +282,13 @@ position: fixed;
 <label for="customerName" class="input-label">שם:</label>
 <input type="text" id="customerName" placeholder="שם:" required class="styled-input latin-only">
 <small class="latin-warning">
- יש למלא את השם באותיות אנגליות בלבד (A-Z)
+ יש למלא את השם באותיות אנגליות בלבד 
 </small>
 
 <label for="customerSurname" class="input-label">שם משפחה:</label>
 <input type="text" id="customerSurname" placeholder="שם משפחה:" required class="styled-input latin-only">
 <small class="latin-warning">
- יש למלא את שם המשפחה באותיות אנגליות בלבד (A-Z)
+ יש למלא את שם המשפחה באותיות אנגליות בלבד
 </small>
 
 
