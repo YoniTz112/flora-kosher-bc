@@ -16,6 +16,7 @@ const translateMap = {
   "חסה": "Alface",
   "תוספת קציצה": "Mais uma carne",
   "רוטב צ'יפוטלה בצד": "Molho Chipotle",
+  "רוטב אלף האיים": "Molho Mil Ilhas",
 
   // bebidas
   "צ’יפס": "Batata frita",
