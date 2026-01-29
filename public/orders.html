@@ -1,385 +1,449 @@
 <!DOCTYPE html>
 <html lang="he">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pedidos Profissionais</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos Profissionais</title>
+    <link href="https://fonts.googleapis.com/css2?family=David+Libre&family=Alef&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'David Libre', Arial, sans-serif;
+            background: #fffaf0;
+            direction: rtl;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=David+Libre&family=Alef&display=swap" rel="stylesheet">
+        h1,
+        h2 {
+            color: #1e90ff;
+            text-align: center;
+        }
 
-  <style>
-    body {
-      font-family: 'David Libre', Arial, sans-serif;
-      background: #fffaf0;
-      direction: rtl;
-      margin: 0;
-      padding: 20px;
-      color: #333;
-    }
-    h1, h2 {
-      color: #1e90ff;
-      text-align: center;
-    }
-    .order {
-      background: #fff;
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .order h3 {
-      margin: 0 0 10px 0;
-    }
-    .order ul {
-      margin: 5px 0;
-      padding-left: 20px;
-    }
-    .order button {
-      background-color: red;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-top: 5px;
-    }
-    button#refresh, button#clearAll, button#generateReport {
-      background-color: #ffcc00;
-      color: #333;
-      margin-bottom: 20px;
-      margin-right: 5px;
-    }
-    button#generateReport {
-      background-color: #1e90ff;
-      color: white;
-    }
-    #report { font-family: 'Alef', sans-serif; }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-    th { background-color: #1e90ff; color: white; }
-    .summary-table th { background-color: #ffcc00; color: #333; }
-    #shabatOn { background-color: green; color: white; margin-right: 5px; }
-    #shabatOff { background-color: #d9534f; color: white; }
-    #shabatStatusDisplay {
-      font-weight: bold;
-      margin-bottom: 10px;
-      padding: 5px 10px;
-      border-radius: 5px;
-      display: inline-block;
-    }
-  </style>
+        .order {
+            background: #fff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .order h3 {
+            margin: 0 0 10px 0;
+        }
+
+        .order ul {
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+
+        .order button {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        button#refresh,
+        button#clearAll,
+        button#generateReport {
+            background-color: #ffcc00;
+            color: #333;
+            margin-bottom: 20px;
+            margin-right: 5px;
+        }
+
+        button#generateReport {
+            background-color: #1e90ff;
+            color: white;
+        }
+
+        #report {
+            font-family: 'Alef', sans-serif;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #1e90ff;
+            color: white;
+        }
+
+        .summary-table th {
+            background-color: #ffcc00;
+            color: #333;
+        }
+
+        #shabatOn {
+            background-color: green;
+            color: white;
+            margin-right: 5px;
+        }
+
+        #shabatOff {
+            background-color: #d9534f;
+            color: white;
+        }
+
+        #shabatStatusDisplay {
+            font-weight: bold;
+            margin-bottom: 10px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+    </style>
 </head>
+
 <body>
 
-<h1>Pedidos</h1>
-<div id="shabatStatusDisplay"></div>
-<button id="refresh">Atualizar pedidos</button>
-<button id="clearAll">Apagar todos</button>
-<button id="generateReport">Gerar Relatório PDF</button>
-<button id="toggleSystem">Ativar/Desativar Sistema de Pedidos</button>
-<button id="shabatOn">Ativar Shabat</button>
-<button id="shabatOff">Desativar Shabat</button>
+    <h1>Pedidos</h1>
 
-<div id="ordersContainer"></div>
+    <div id="shabatStatusDisplay"></div>
 
-<div id="report" style="display:none; padding:20px;">
-  <h1>Relatório Diário de Pedidos</h1>
-  <div id="reportContent"></div>
-</div>
+    <div class="controls">
+        <button id="refresh">Atualizar pedidos</button>
+        <button id="clearAll">Apagar todos</button>
+        <button id="generateReport">Gerar Relatório PDF</button>
+        <button id="toggleSystem">Ativar/Desativar Sistema de Pedidos</button>
+        <button id="shabatOn">Ativar Shabat</button>
+        <button id="shabatOff">Desativar Shabat</button>
+    </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script>
-async function fetchOrders(){
-  try {
-    const res = await fetch("/orders");
-    if(!res.ok) throw new Error("Erro ao buscar pedidos");
-    const orders = await res.json();
-    renderOrders(orders);
-  } catch(err){
-    alert("Servidor offline ou erro de conexão!");
-    console.error(err);
-  }
-}
+    <div id="ordersContainer"></div>
 
-function renderOrders(orders){
-  const container = document.getElementById("ordersContainer");
-  container.innerHTML = "";
-  if(orders.length === 0){ container.innerHTML = "<p>אין הזמנות</p>"; return; }
+    <div id="report" style="display:none; padding:20px;">
+        <h1>Relatório Diário de Pedidos</h1>
+        <div id="reportContent"></div>
+    </div>
 
-  orders.forEach((order, idx) => {
-    // Correção: Mover "Batata Frita" de drinks para items, se estiver incorretamente classificada
-    const batataFritaIndex = order.drinks.findIndex(d => d.name.toLowerCase().includes("batata frita"));
-    if (batataFritaIndex !== -1) {
-        const batataFrita = order.drinks.splice(batataFritaIndex, 1)[0];
-        // Ajuste o preço total do pedido se necessário, embora o total já venha do servidor
-        // Para garantir que a batata frita seja exibida como item:
-        order.items.push(batataFrita);
-    }
-
-    const div = document.createElement("div");
-    div.className = "order";
-    // Adicionando o timestamp do pedido
-    const orderTime = order.time ? new Date(order.time).toLocaleString() : 'Desconhecido';
-    let html = `<h3>${order.name} ${order.surname} - ₪${order.total} - ${orderTime}</h3>`;
-    if(order.items.length > 0){
-      html += "<strong>Itens:</strong><ol>";
-      order.items.forEach(item => {
-        html += `<li>${item.name}${item.toppings?.length ? " ("+item.toppings.join(", ")+")" : ""} - ₪${item.price + (item.toppingsPrice || 0)}</li>`;
-      });
-      html += "</ol>";
-    }
-    if(order.drinks.length > 0){
-      html += "<strong>Drinks:</strong><ol>";
-      order.drinks.forEach(drink => {
-        // Corrigindo a exibição de itens com quantidade (type: "qty")
-        if (drink.type === "qty") {
-          html += `<li>${drink.name} × ${drink.qty} - ₪${drink.price * drink.qty}</li>`;
-        } else {
-          html += `<li>${drink.name} - ₪${drink.price}</li>`;
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        async function fetchOrders() {
+            try {
+                const res = await fetch("/orders");
+                if (!res.ok) throw new Error("Erro ao buscar pedidos");
+                const orders = await res.json();
+                renderOrders(orders);
+            } catch (err) {
+                alert("Servidor offline ou erro de conexão!");
+                console.error(err);
+            }
         }
-      });
-      html += "</ol>";
-    }
-    html += `
-  <button onclick="printOrder(${idx})" style="background:black;color:white;margin-right:5px">
-    🖨 Imprimir pedido
-  </button>
-  <button onclick="removeOrder(${idx})">
-    Apagar pedido
-  </button>
-`;
 
-    div.innerHTML = html;
-    container.appendChild(div);
-  });
-}
+        function renderOrders(orders) {
+            const container = document.getElementById("ordersContainer");
+            container.innerHTML = "";
 
-async function removeOrder(idx){
-  if(!confirm("Tem certeza que quer apagar este pedido?")) return;
-  try { const res = await fetch(`/orders/${idx}`, { method: "DELETE" }); if(res.ok) fetchOrders(); }
-  catch(err){ alert("Erro ao conectar com o servidor"); console.error(err); }
-}
+            if (orders.length === 0) {
+                container.innerHTML = "<p>אין הזמנות</p>";
+                return;
+            }
 
-document.getElementById("clearAll").addEventListener("click", async ()=>{
-  if(!confirm("Tem certeza que quer apagar todos os pedidos?")) return;
-  try { const res = await fetch("/orders", { method: "DELETE" }); if(res.ok) fetchOrders(); }
-  catch(err){ alert("Erro ao conectar com o servidor"); console.error(err); }
-});
+            orders.forEach((order, idx) => {
+                // Correção: Mover "Batata Frita" de drinks para items
+                const batataFritaIndex = order.drinks.findIndex(d => d.name.toLowerCase().includes("batata frita"));
+                if (batataFritaIndex !== -1) {
+                    const batataFrita = order.drinks.splice(batataFritaIndex, 1)[0];
+                    order.items.push(batataFrita);
+                }
 
-document.getElementById("refresh").addEventListener("click", fetchOrders);
-fetchOrders();
+                const div = document.createElement("div");
+                div.className = "order";
 
-/* ====== GERAR RELATÓRIO PDF ====== */
-document.getElementById("generateReport").addEventListener("click", async ()=>{
-  try {
-    const res = await fetch("/orders");
-    if(!res.ok) throw new Error("Erro ao buscar pedidos");
-    const orders = await res.json();
-    if(orders.length === 0){ alert("Nenhum pedido para gerar relatório"); return; }
+                const orderTime = order.time ? new Date(order.time).toLocaleString() : 'Desconhecido';
+                let html = `<h3>${order.name} ${order.surname} - ₪${order.total} - ${orderTime}</h3>`;
 
-    const reportContent = document.getElementById("reportContent");
-    reportContent.innerHTML = "";
+                if (order.items.length > 0) {
+                    html += "<strong>Itens:</strong><ol>";
+                    order.items.forEach(item => {
+                        html += `<li>${item.name}${item.toppings?.length ? " (" + item.toppings.join(", ") + ")" : ""} - ₪${item.price + (item.toppingsPrice || 0)}</li>`;
+                    });
+                    html += "</ol>";
+                }
 
-    const table = document.createElement("table");
-    table.innerHTML = `<thead>
-      <tr>
-        <th>Cliente</th><th>Itens</th><th>Toppings</th><th>Drinks</th>
-        <th>Preço Pedido (₪)</th><th>Hora do Pedido</th>
-      </tr>
-    </thead>`;
-    const tbody = document.createElement("tbody");
-    let totalRevenue = 0;
-    const itemSummary = {};
+                if (order.drinks.length > 0) {
+                    html += "<strong>Drinks:</strong><ol>";
+                    order.drinks.forEach(drink => {
+                        if (drink.type === "qty") {
+                            html += `<li>${drink.name} × ${drink.qty} - ₪${drink.price * drink.qty}</li>`;
+                        } else {
+                            html += `<li>${drink.name} - ₪${drink.price}</li>`;
+                        }
+                    });
+                    html += "</ol>";
+                }
 
-    orders.forEach(order=>{
-      totalRevenue += order.total;
-      order.items.forEach(item=>{
-        if(!itemSummary[item.name]) itemSummary[item.name] = { qty:0, revenue:0 };
-        itemSummary[item.name].qty += 1;
-        itemSummary[item.name].revenue += item.price + (item.toppingsPrice || 0);
-      });
-      const tr = document.createElement("tr");
-      const orderTime = order.time ? new Date(order.time).toLocaleString() : 'Desconhecido';
-      tr.innerHTML = `<td>${order.name} ${order.surname}</td>
-        <td>${order.items.map(i=>i.name).join(", ")}</td>
-        <td>${order.items.map(i=>i.toppings?.join(", ")||"-").join("; ")}</td>
-        <td>${order.drinks.map(d=>d.name).join(", ")||"-"}</td>
-        <td>${order.total.toFixed(2)}</td>
-        <td>${orderTime}</td>`;
-      tbody.appendChild(tr);
-    });
-    table.appendChild(tbody);
-    reportContent.appendChild(table);
-
-    const summaryTitle = document.createElement("h2");
-    summaryTitle.textContent = "Resumo de Itens (Pesquisa)";
-    reportContent.appendChild(summaryTitle);
-
-    const summaryTable = document.createElement("table");
-    summaryTable.className = "summary-table";
-    summaryTable.innerHTML = `<thead><tr>
-      <th>Item</th><th>Quantidade</th><th>Receita (₪)</th>
-    </tr></thead>`;
-    const summaryBody = document.createElement("tbody");
-    for(const [item, data] of Object.entries(itemSummary)){
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${item}</td><td>${data.qty}</td><td>${data.revenue.toFixed(2)}</td>`;
-      summaryBody.appendChild(tr);
-    }
-    summaryTable.appendChild(summaryBody);
-    reportContent.appendChild(summaryTable);
-
-    const totalP = document.createElement("p");
-    totalP.textContent = `Total de pedidos: ${orders.length}`;
-    totalP.style.fontWeight="bold";
-    reportContent.appendChild(totalP);
-
-    const lucroP = document.createElement("p");
-    lucroP.textContent = `Lucro total: ₪${totalRevenue.toFixed(2)}`;
-    lucroP.style.fontWeight="bold";
-    reportContent.appendChild(lucroP);
-
-    const element = document.getElementById("report");
-    element.style.display="block";
-    html2pdf().from(element).save(`Relatorio_${new Date().toLocaleDateString()}.pdf`).then(()=>{
-      element.style.display="none";
-    });
-  } catch(err){ console.error(err); alert("Erro ao gerar relatório"); }
-});
-
-/* ====== SISTEMA DE PEDIDOS ====== */
-let systemActive = true;
-document.getElementById("toggleSystem").addEventListener("click", () => {
-  systemActive = !systemActive;
-  const ordersContainer = document.getElementById("ordersContainer");
-  const buttons = document.querySelectorAll("button");
-  if(!systemActive){
-    ordersContainer.style.display = "none";
-    buttons.forEach(b => { if(b.id !== "toggleSystem") b.disabled = true; });
-    alert("Sistema de pedidos DESATIVADO");
-  } else {
-    ordersContainer.style.display = "block";
-    buttons.forEach(b => { if(b.id !== "toggleSystem") b.disabled = false; });
-    alert("Sistema de pedidos ATIVADO");
-    fetchOrders();
-  }
-});
-
-/* ====== SISTEMA DE SHABAT ====== */
-async function updateShabatStatus(){
-  const statusDisplay = document.getElementById("shabatStatusDisplay");
-  try{
-    const res = await fetch("/shabat-status");
-    if(!res.ok) throw new Error("Erro ao buscar status do Shabat");
-    const data = await res.json();
-    
-    if(data.active){
-      statusDisplay.textContent = "Status Shabat: ATIVO";
-      statusDisplay.style.backgroundColor = "#d4edda";
-      statusDisplay.style.color = "#155724";
-    } else {
-      statusDisplay.textContent = "Status Shabat: DESATIVADO";
-      statusDisplay.style.backgroundColor = "#f8d7da";
-      statusDisplay.style.color = "#721c24";
-    }
-  } catch(err){ 
-    console.error(err); 
-    statusDisplay.textContent = "Status Shabat: ERRO";
-    statusDisplay.style.backgroundColor = "#fff3cd";
-    statusDisplay.style.color = "#856404";
-  }
-}
-
-document.getElementById("shabatOn").addEventListener("click", async () => {
-  try {
-    const res = await fetch("/shabat/on", { method: "POST" });
-    if(res.ok) {
-      updateShabatStatus();
-      alert("Shabat ATIVADO com sucesso!");
-    } else {
-      alert("Erro ao ativar Shabat.");
-    }
-  } catch(err) {
-    console.error(err);
-    alert("Erro de conexão ao ativar Shabat.");
-  }
-});
-
-document.getElementById("shabatOff").addEventListener("click", async () => {
-  try {
-    const res = await fetch("/shabat/off", { method: "POST" });
-    if(res.ok) {
-      updateShabatStatus();
-      alert("Shabat DESATIVADO com sucesso!");
-    } else {
-      alert("Erro ao desativar Shabat.");
-    }
-  } catch(err) {
-    console.error(err);
-    alert("Erro de conexão ao desativar Shabat.");
-  }
-});
-
-// Busca o status inicial ao carregar a página
-updateShabatStatus();
-
- function printOrder(idx){
-  fetch("/orders")
-    .then(res => res.json())
-    .then(orders => {
-      const order = orders[idx];
-      if(!order){
-        alert("Pedido não encontrado");
-        return;
-      }
-
-      const line = "------------------------\n";
-      let text = "";
-
-      text += "******** COZINHA ********\n";
-      text += `CLIENTE: ${order.name} ${order.surname}\n`;
-      text += `HORA: ${order.time ? new Date(order.time).toLocaleTimeString() : "-"}\n`;
-      text += line;
-      text += "ITENS:\n";
-      text += line;
-
-      order.items.forEach((item, i) => {
-        text += `${i + 1}. ${item.name}\n`;
-        if(item.toppings?.length){
-          text += `   + ${item.toppings.join(", ")}\n`;
+                html += `
+                    <button onclick="printOrder(${idx})" style="background:black;color:white;margin-right:5px"> 🖨 Imprimir pedido </button>
+                    <button onclick="removeOrder(${idx})"> Apagar pedido </button>
+                `;
+                div.innerHTML = html;
+                container.appendChild(div);
+            });
         }
-        text += line;
-      });
 
-      if(order.drinks.length){
-        text += "EXTRAS:\n";
-        text += line;
-        const grouped = {};
-        order.drinks.forEach(d => {
-          grouped[d.name] = (grouped[d.name] || 0) + (d.qty || 1);
+        async function removeOrder(idx) {
+            if (!confirm("Tem certeza que quer apagar este pedido?")) return;
+            try {
+                const res = await fetch(`/orders/${idx}`, { method: "DELETE" });
+                if (res.ok) fetchOrders();
+            } catch (err) {
+                alert("Erro ao conectar com o servidor");
+                console.error(err);
+            }
+        }
+
+        document.getElementById("clearAll").addEventListener("click", async () => {
+            if (!confirm("Tem certeza que quer apagar todos os pedidos?")) return;
+            try {
+                const res = await fetch("/orders", { method: "DELETE" });
+                if (res.ok) fetchOrders();
+            } catch (err) {
+                alert("Erro ao conectar com o servidor");
+                console.error(err);
+            }
         });
-        Object.entries(grouped).forEach(([name, qty])=>{
-          text += `  • ${qty}x ${name}\n`;
+
+        document.getElementById("refresh").addEventListener("click", fetchOrders);
+
+        /* ====== GERAR RELATÓRIO PDF ====== */
+        document.getElementById("generateReport").addEventListener("click", async () => {
+            try {
+                const res = await fetch("/orders");
+                if (!res.ok) throw new Error("Erro ao buscar pedidos");
+                const orders = await res.json();
+
+                if (orders.length === 0) {
+                    alert("Nenhum pedido para gerar relatório");
+                    return;
+                }
+
+                const reportContent = document.getElementById("reportContent");
+                reportContent.innerHTML = "";
+
+                const table = document.createElement("table");
+                table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>Cliente</th><th>Itens</th><th>Toppings</th><th>Drinks</th>
+                            <th>Preço Pedido (₪)</th><th>Hora do Pedido</th>
+                        </tr>
+                    </thead>`;
+
+                const tbody = document.createElement("tbody");
+                let totalRevenue = 0;
+                const itemSummary = {};
+
+                orders.forEach(order => {
+                    totalRevenue += order.total;
+                    order.items.forEach(item => {
+                        if (!itemSummary[item.name]) itemSummary[item.name] = { qty: 0, revenue: 0 };
+                        itemSummary[item.name].qty += 1;
+                        itemSummary[item.name].revenue += item.price + (item.toppingsPrice || 0);
+                    });
+
+                    const tr = document.createElement("tr");
+                    const orderTime = order.time ? new Date(order.time).toLocaleString() : 'Desconhecido';
+                    tr.innerHTML = `
+                        <td>${order.name} ${order.surname}</td>
+                        <td>${order.items.map(i => i.name).join(", ")}</td>
+                        <td>${order.items.map(i => i.toppings?.join(", ") || "-").join("; ")}</td>
+                        <td>${order.drinks.map(d => d.name).join(", ") || "-"}</td>
+                        <td>${order.total.toFixed(2)}</td>
+                        <td>${orderTime}</td>`;
+                    tbody.appendChild(tr);
+                });
+
+                table.appendChild(tbody);
+                reportContent.appendChild(table);
+
+                const summaryTitle = document.createElement("h2");
+                summaryTitle.textContent = "Resumo de Itens (Pesquisa)";
+                reportContent.appendChild(summaryTitle);
+
+                const summaryTable = document.createElement("table");
+                summaryTable.className = "summary-table";
+                summaryTable.innerHTML = `<thead><tr><th>Item</th><th>Quantidade</th><th>Receita (₪)</th></tr></thead>`;
+
+                const summaryBody = document.createElement("tbody");
+                for (const [item, data] of Object.entries(itemSummary)) {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `<td>${item}</td><td>${data.qty}</td><td>${data.revenue.toFixed(2)}</td>`;
+                    summaryBody.appendChild(tr);
+                }
+                summaryTable.appendChild(summaryBody);
+                reportContent.appendChild(summaryTable);
+
+                const totalP = document.createElement("p");
+                totalP.textContent = `Total de pedidos: ${orders.length}`;
+                totalP.style.fontWeight = "bold";
+                reportContent.appendChild(totalP);
+
+                const lucroP = document.createElement("p");
+                lucroP.textContent = `Lucro total: ₪${totalRevenue.toFixed(2)}`;
+                lucroP.style.fontWeight = "bold";
+                reportContent.appendChild(lucroP);
+
+                const element = document.getElementById("report");
+                element.style.display = "block";
+                html2pdf().from(element).save(`Relatorio_${new Date().toLocaleDateString()}.pdf`).then(() => {
+                    element.style.display = "none";
+                });
+            } catch (err) {
+                console.error(err);
+                alert("Erro ao gerar relatório");
+            }
         });
-        text += line;
-      }
 
-      text += "\n\n";
+        /* ====== SISTEMA DE PEDIDOS ====== */
+        let systemActive = true;
+        document.getElementById("toggleSystem").addEventListener("click", () => {
+            systemActive = !systemActive;
+            const ordersContainer = document.getElementById("ordersContainer");
+            const buttons = document.querySelectorAll("button");
 
-      // 👉 AQUI É A MUDANÇA
-      fetch("http://localhost:3333/print", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text })
-      }).catch(() => {
-        alert("App de impressão não está rodando");
-      });
-    });
-}
+            if (!systemActive) {
+                ordersContainer.style.display = "none";
+                buttons.forEach(b => {
+                    if (b.id !== "toggleSystem") b.disabled = true;
+                });
+                alert("Sistema de pedidos DESATIVADO");
+            } else {
+                ordersContainer.style.display = "block";
+                buttons.forEach(b => {
+                    if (b.id !== "toggleSystem") b.disabled = false;
+                });
+                alert("Sistema de pedidos ATIVADO");
+                fetchOrders();
+            }
+        });
 
+        /* ====== SISTEMA DE SHABAT ====== */
+        async function updateShabatStatus() {
+            const statusDisplay = document.getElementById("shabatStatusDisplay");
+            try {
+                const res = await fetch("/shabat-status");
+                if (!res.ok) throw new Error("Erro ao buscar status do Shabat");
+                const data = await res.json();
+                if (data.active) {
+                    statusDisplay.textContent = "Status Shabat: ATIVO";
+                    statusDisplay.style.backgroundColor = "#d4edda";
+                    statusDisplay.style.color = "#155724";
+                } else {
+                    statusDisplay.textContent = "Status Shabat: DESATIVADO";
+                    statusDisplay.style.backgroundColor = "#f8d7da";
+                    statusDisplay.style.color = "#721c24";
+                }
+            } catch (err) {
+                console.error(err);
+                statusDisplay.textContent = "Status Shabat: ERRO";
+                statusDisplay.style.backgroundColor = "#fff3cd";
+                statusDisplay.style.color = "#856404";
+            }
+        }
 
-</script>
+        document.getElementById("shabatOn").addEventListener("click", async () => {
+            try {
+                const res = await fetch("/shabat/on", { method: "POST" });
+                if (res.ok) {
+                    updateShabatStatus();
+                    alert("Shabat ATIVADO com sucesso!");
+                } else {
+                    alert("Erro ao ativar Shabat.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Erro de conexão ao ativar Shabat.");
+            }
+        });
 
+        document.getElementById("shabatOff").addEventListener("click", async () => {
+            try {
+                const res = await fetch("/shabat/off", { method: "POST" });
+                if (res.ok) {
+                    updateShabatStatus();
+                    alert("Shabat DESATIVADO com sucesso!");
+                } else {
+                    alert("Erro ao desativar Shabat.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Erro de conexão ao desativar Shabat.");
+            }
+        });
+
+        function printOrder(idx) {
+            fetch("/orders")
+                .then(res => res.json())
+                .then(orders => {
+                    const order = orders[idx];
+                    if (!order) {
+                        alert("Pedido não encontrado");
+                        return;
+                    }
+                    const line = "------------------------\n";
+                    let text = "";
+                    text += "******** COZINHA ********\n";
+                    text += `CLIENTE: ${order.name} ${order.surname}\n`;
+                    text += `HORA: ${order.time ? new Date(order.time).toLocaleTimeString() : "-"}\n`;
+                    text += line;
+                    text += "ITENS:\n";
+                    text += line;
+                    order.items.forEach((item, i) => {
+                        text += `${i + 1}. ${item.name}\n`;
+                        if (item.toppings?.length) {
+                            text += `+ ${item.toppings.join(", ")}\n`;
+                        }
+                        text += line;
+                    });
+                    if (order.drinks.length) {
+                        text += "EXTRAS:\n";
+                        text += line;
+                        const groupedDrinks = {};
+                        order.drinks.forEach(d => {
+                            if (!groupedDrinks[d.name]) {
+                                groupedDrinks[d.name] = 0;
+                            }
+                            groupedDrinks[d.name] += d.qty || 1;
+                        });
+                        Object.entries(groupedDrinks).forEach(([name, qty]) => {
+                            text += `• ${qty}x ${name}\n`;
+                        });
+                        text += line;
+                    }
+                    text += "************************\n";
+
+                    const win = window.open("", "_blank");
+                    win.document.write(`
+                        <pre style="font-family: monospace; font-size: 16px; line-height: 1.2; width: 280px; margin: 0; padding: 0; white-space: pre; direction: ltr;">${text}</pre>
+                    `);
+                    win.document.close();
+                    win.focus();
+                    win.print();
+                });
+        }
+
+        // Inicialização
+        fetchOrders();
+        updateShabatStatus();
+    </script>
 </body>
+
 </html>
