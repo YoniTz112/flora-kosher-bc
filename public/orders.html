@@ -324,7 +324,7 @@ document.getElementById("shabatOff").addEventListener("click", async () => {
 // Busca o status inicial ao carregar a página
 updateShabatStatus();
 
-function printOrder(idx){
+ function printOrder(idx){
   fetch("/orders")
     .then(res => res.json())
     .then(orders => {
@@ -355,42 +355,29 @@ function printOrder(idx){
       if(order.drinks.length){
         text += "EXTRAS:\n";
         text += line;
-const groupedDrinks = {};
-
-order.drinks.forEach(d => {
-  if(!groupedDrinks[d.name]){
-    groupedDrinks[d.name] = 0;
-  }
-  groupedDrinks[d.name] += d.qty || 1;
-});
-
-Object.entries(groupedDrinks).forEach(([name, qty]) => {
-  text += `  • ${qty}x ${name}\n`;
-});
-text += line;
+        const grouped = {};
+        order.drinks.forEach(d => {
+          grouped[d.name] = (grouped[d.name] || 0) + (d.qty || 1);
+        });
+        Object.entries(grouped).forEach(([name, qty])=>{
+          text += `  • ${qty}x ${name}\n`;
+        });
+        text += line;
       }
-      
-      text += "************************\n";
 
-      const win = window.open("", "_blank");
-      win.document.write(`
-        <pre style="
-          font-family: monospace;
-          font-size: 16px;
-          line-height: 1.2;
-          width: 280px;
-          margin: 0;
-          padding: 0;
-          white-space: pre;
-          direction: ltr;
-        ">${text}</pre>
-      `);
+      text += "\n\n";
 
-      win.document.close();
-      win.focus();
-      win.print();
+      // 👉 AQUI É A MUDANÇA
+      fetch("http://localhost:3333/print", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text })
+      }).catch(() => {
+        alert("App de impressão não está rodando");
+      });
     });
 }
+
 
 </script>
 
