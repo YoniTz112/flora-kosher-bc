@@ -395,39 +395,50 @@ function printOrder(idx) {
             const order = orders[idx];
             if (!order) return;
 
-            // Montando o texto com quebras de linha explícitas
-            let text = `CLIENTE: ${order.name} ${order.surname}\n`;
+            // CLIENTE E HORA (BEM CLARO)
+            let text = `CLIENTE: ${order.name.toUpperCase()} ${order.surname.toUpperCase()}\n`;
             text += `HORA: ${order.time ? new Date(order.time).toLocaleTimeString() : "-"}\n`;
-            text += "--------------------------------\n";
-            text += "ITENS:\n";
+            text += "================================\n\n"; // Espaço duplo
             
+            // ITENS DO PEDIDO
             order.items.forEach((item) => {
-                text += `> ${item.name.toUpperCase()}\n`; // Item principal em MAIÚSCULO
+                // Item principal com um ">>" para destacar
+                text += `>> ${item.name.toUpperCase()}\n`; 
+                
                 if (item.toppings?.length) {
                     item.toppings.forEach(top => {
-                        text += `  + ${top}\n`; // Cada acompanhamento em uma linha nova com recuo
+                        // Cada topping ganha sua própria linha e um sinal de +
+                        text += ` + ${top.toUpperCase()}\n`; 
                     });
                 }
-                text += "--------------------------------\n";
+                text += "\n--------------------------------\n\n"; // Espaço extra entre itens
             });
 
-            if (order.drinks.length) {
-                text += "EXTRAS:\n";
+            // BEBIDAS / EXTRAS
+            if (order.drinks && order.drinks.length > 0) {
+                text += "EXTRAS / BEBIDAS:\n";
                 order.drinks.forEach(d => {
-                    text += `• ${d.qty || 1}x ${d.name}\n`;
+                    text += ` • ${d.qty || 1}X ${d.name.toUpperCase()}\n`;
                 });
-                text += "--------------------------------\n";
+                text += "\n================================\n";
             }
 
+            // Envio para o servidor Windows (192.168.15.6)
             try {
-                await fetch("http://192.168.15.6:3333/print", {
+                const response = await fetch("http://192.168.15.6:3333/print", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ text })
                 });
-                alert("Pedido enviado para a cozinha!");
+
+                if (response.ok) {
+                    alert("IMPRESSO COM SUCESSO!");
+                } else {
+                    alert("ERRO NO SERVIDOR DE IMPRESSÃO");
+                }
             } catch (err) {
-                alert("Erro ao conectar no Windows: " + err);
+                alert("NÃO FOI POSSÍVEL CONECTAR AO WINDOWS. VERIFIQUE O IP E O FIREWALL.");
+                console.error(err);
             }
         });
 }
