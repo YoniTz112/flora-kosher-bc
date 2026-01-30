@@ -426,7 +426,7 @@ function printOrder(idx) {
 
             // Aqui enviamos para o Node que imprime na Daruma
             try {
-                const res = await fetch("http://localhost:3333/print", {
+                const res = await fetch("http://192.168.15.8:3333/print", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
