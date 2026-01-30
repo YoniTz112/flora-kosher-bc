@@ -393,51 +393,41 @@ function printOrder(idx) {
         .then(res => res.json())
         .then(async orders => {
             const order = orders[idx];
-            if (!order) {
-                alert("Pedido não encontrado");
-                return;
-            }
+            if (!order) return;
 
-            let line = "------------------------\n";
-            let text = "";
-            text += "******** COZINHA ********\n";
-            text += `CLIENTE: ${order.name} ${order.surname}\n`;
+            // Montando o texto com quebras de linha explícitas
+            let text = `CLIENTE: ${order.name} ${order.surname}\n`;
             text += `HORA: ${order.time ? new Date(order.time).toLocaleTimeString() : "-"}\n`;
-            text += line;
-            text += "ITENS:\n" + line;
-            order.items.forEach((item, i) => {
-                text += `${i + 1}. ${item.name}\n`;
-                if (item.toppings?.length) text += `+ ${item.toppings.join(", ")}\n`;
-                text += line;
+            text += "--------------------------------\n";
+            text += "ITENS:\n";
+            
+            order.items.forEach((item) => {
+                text += `> ${item.name.toUpperCase()}\n`; // Item principal em MAIÚSCULO
+                if (item.toppings?.length) {
+                    item.toppings.forEach(top => {
+                        text += `  + ${top}\n`; // Cada acompanhamento em uma linha nova com recuo
+                    });
+                }
+                text += "--------------------------------\n";
             });
-            if (order.drinks.length) {
-                text += "EXTRAS:\n" + line;
-                const groupedDrinks = {};
-                order.drinks.forEach(d => {
-                    if (!groupedDrinks[d.name]) groupedDrinks[d.name] = 0;
-                    groupedDrinks[d.name] += d.qty || 1;
-                });
-                Object.entries(groupedDrinks).forEach(([name, qty]) => {
-                    text += `• ${qty}x ${name}\n`;
-                });
-                text += line;
-            }
-            text += "************************\n";
 
-            // Aqui enviamos para o Node que imprime na Daruma
+            if (order.drinks.length) {
+                text += "EXTRAS:\n";
+                order.drinks.forEach(d => {
+                    text += `• ${d.qty || 1}x ${d.name}\n`;
+                });
+                text += "--------------------------------\n";
+            }
+
             try {
-                const res = await fetch("http://192.168.15.6:3333/print", {
+                await fetch("http://192.168.15.6:3333/print", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ text })
                 });
-
-                const result = await res.text();
-                alert(result); // Impresso com sucesso
+                alert("Pedido enviado para a cozinha!");
             } catch (err) {
-                alert("Erro ao imprimir: " + err);
+                alert("Erro ao conectar no Windows: " + err);
             }
         });
 }
