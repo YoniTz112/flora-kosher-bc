@@ -398,24 +398,15 @@ function printOrder(idx) {
                 return;
             }
 
-            const ESC = "\x1B";
-
             let text = "";
 
-            // RESET
-            text += ESC + "@";
-
-            // Fonte média/grande (compatível Daruma)
-            text += ESC + "!" + "\x10"; // aumenta altura
-            text += ESC + "a" + "\x00"; // esquerda
-
             text += "COZINHA\n";
-            text += "------------------------\n";
+            text += "========================\n";
             text += `${order.name} ${order.surname}\n`;
             text += `Hora: ${order.time ? new Date(order.time).toLocaleTimeString() : "-"}\n`;
-            text += "------------------------\n";
+            text += "========================\n\n";
 
-            // ITENS — UM POR LINHA
+            // ITENS
             order.items.forEach(item => {
                 text += item.name.toUpperCase() + "\n";
 
@@ -452,7 +443,6 @@ function printOrder(idx) {
             }
         });
 }
-
 
     </script>
 </body>
