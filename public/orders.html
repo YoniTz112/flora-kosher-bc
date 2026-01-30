@@ -398,44 +398,57 @@ function printOrder(idx) {
                 return;
             }
 
-            let line = "------------------------\n";
-            let text = "";
-            text += "******** COZINHA ********\n";
-            text += `CLIENTE: ${order.name} ${order.surname}\n`;
-            text += `HORA: ${order.time ? new Date(order.time).toLocaleTimeString() : "-"}\n`;
-            text += line;
-            text += "ITENS:\n" + line;
-            order.items.forEach((item, i) => {
-                text += `${i + 1}. ${item.name}\n`;
-                if (item.toppings?.length) text += `+ ${item.toppings.join(", ")}\n`;
-                text += line;
-            });
-            if (order.drinks.length) {
-                text += "EXTRAS:\n" + line;
-                const groupedDrinks = {};
-                order.drinks.forEach(d => {
-                    if (!groupedDrinks[d.name]) groupedDrinks[d.name] = 0;
-                    groupedDrinks[d.name] += d.qty || 1;
-                });
-                Object.entries(groupedDrinks).forEach(([name, qty]) => {
-                    text += `• ${qty}x ${name}\n`;
-                });
-                text += line;
-            }
-            text += "************************\n";
+            const ESC = "\x1B";
+            const GS = "\x1D";
 
-            // Aqui enviamos para o Node que imprime na Daruma
+            let text = "";
+
+            // RESET + FONTE GRANDE
+            text += ESC + "@";
+            text += ESC + "!" + "\x30"; // fonte grande
+            text += GS + "!" + "\x11";  // dobra largura e altura
+            text += ESC + "a" + "\x00"; // esquerda
+
+            text += "COZINHA\n";
+            text += "------------------------\n";
+
+            // Cliente
+            text += `${order.name} ${order.surname}\n`;
+            text += `Hora: ${order.time ? new Date(order.time).toLocaleTimeString() : "-"}\n`;
+            text += "------------------------\n";
+
+            // ITENS — UM POR LINHA
+            order.items.forEach(item => {
+                text += item.name.toUpperCase() + "\n";
+
+                if (item.toppings?.length) {
+                    item.toppings.forEach(t => {
+                        text += "  - " + t.toUpperCase() + "\n";
+                    });
+                }
+
+                text += "\n";
+            });
+
+            // EXTRAS
+            if (order.drinks.length) {
+                text += "EXTRAS\n";
+                order.drinks.forEach(d => {
+                    text += `${d.qty || 1}x ${d.name.toUpperCase()}\n`;
+                });
+            }
+
+            text += "\n\n\n";
+
             try {
                 const res = await fetch("http://192.168.15.8:3333/print", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ text })
                 });
 
                 const result = await res.text();
-                alert(result); // Impresso com sucesso
+                alert(result);
             } catch (err) {
                 alert("Erro ao imprimir: " + err);
             }
