@@ -399,20 +399,18 @@ function printOrder(idx) {
             }
 
             const ESC = "\x1B";
-            const GS = "\x1D";
 
             let text = "";
 
-            // RESET + FONTE GRANDE
+            // RESET
             text += ESC + "@";
-            text += ESC + "!" + "\x30"; // fonte grande
-            text += GS + "!" + "\x11";  // dobra largura e altura
+
+            // Fonte média/grande (compatível Daruma)
+            text += ESC + "!" + "\x10"; // aumenta altura
             text += ESC + "a" + "\x00"; // esquerda
 
             text += "COZINHA\n";
             text += "------------------------\n";
-
-            // Cliente
             text += `${order.name} ${order.surname}\n`;
             text += `Hora: ${order.time ? new Date(order.time).toLocaleTimeString() : "-"}\n`;
             text += "------------------------\n";
@@ -454,6 +452,7 @@ function printOrder(idx) {
             }
         });
 }
+
 
     </script>
 </body>
