@@ -112,11 +112,13 @@ app.post("/orders", (req, res) => {
     toppings: item.toppings.map(t => translate(t))
   }));
 
-  // traduz drinks
-  order.drinks = order.drinks.map(drink => ({
-    ...drink,
-    name: translate(drink.name)
-  }));
+order.drinks = order.drinks.map(drink => ({
+  name: translate(drink.name),
+  price: drink.price,
+  qty: Number(drink.qty) > 0 ? Number(drink.qty) : 1,
+  type: "qty"
+}));
+
 
   orders.push(order);
   console.log("🖨 Pedido traduzido para cozinha:", order);
