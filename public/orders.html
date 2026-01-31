@@ -411,13 +411,26 @@
                 text += "--------------------------------\n";
             });
 
-            if (order.drinks.length) {
-                text += "EXTRAS:\n";
-                order.drinks.forEach(d => {
-                    text += `• ${d.qty || 1}x ${d.name}\n`;
-                });
-                text += "--------------------------------\n";
-            }
+if (order.drinks.length) {
+    text += "EXTRAS:\n";
+
+    const drinkMap = {};
+
+    order.drinks.forEach(d => {
+        if (d.type === "qty" && d.qty) {
+            drinkMap[d.name] = (drinkMap[d.name] || 0) + d.qty;
+        } else {
+            drinkMap[d.name] = (drinkMap[d.name] || 0) + 1;
+        }
+    });
+
+    Object.entries(drinkMap).forEach(([name, qty]) => {
+        text += `• ${qty}x ${name}\n`;
+    });
+
+    text += "--------------------------------\n";
+}
+
 
             try {
                 await fetch("http://192.168.15.4:3333/print", {
