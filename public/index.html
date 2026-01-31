@@ -595,17 +595,17 @@ function addQtyToCart(name, price, btn) {
     let qty = parseInt(qtySpan.textContent);
     if (qty < 1) { alert("בחר לפחות 1 פריט"); return; }
 
-    // Adiciona item ao carrinho
+    // CORREÇÃO AQUI:
     cart.push({
-        name,
-        price: price * qty,
+        name: name,
+        price: price, // Mande o preço UNITÁRIO (o servidor ou o total cuidam do resto)
         toppings: [],
         toppingsPrice: 0,
         type: "drink",
-        quantity: qty
+        qty: qty      // Mudado de 'quantity' para 'qty' para bater com o servidor
     });
 
-    qtySpan.textContent = 0; // reseta quantidade
+    qtySpan.textContent = 0; // reseta quantidade no visor
     updateCart();
     showAddedPopup();
 }

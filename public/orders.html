@@ -388,49 +388,41 @@
                 alert("Erro de conexão ao desativar Shabat.");
             }
         });
- function printOrder(idx) {
+function printOrder(idx) {
     fetch("/orders")
         .then(res => res.json())
         .then(async orders => {
             const order = orders[idx];
             if (!order) return;
 
-            // Montando o texto com quebras de linha explícitas
             let text = `CLIENTE: ${order.name} ${order.surname}\n`;
             text += `HORA: ${order.time ? new Date(order.time).toLocaleTimeString() : "-"}\n`;
             text += "--------------------------------\n";
             text += "ITENS:\n";
             
+            // 1. Corrigindo Itens (Lanches/Pratos)
+            // Se o item tiver quantidade, ela deve aparecer aqui também
             order.items.forEach((item) => {
-                text += `> ${item.name.toUpperCase()}\n`; // Item principal em MAIÚSCULO
+                const itemQty = item.qty || 1; // Garante que se não tiver qty, seja 1
+                text += `> ${itemQty}x ${item.name.toUpperCase()}\n`; 
                 if (item.toppings?.length) {
                     item.toppings.forEach(top => {
-                        text += `  + ${top}\n`; // Cada acompanhamento em uma linha nova com recuo
+                        text += `   + ${top}\n`;
                     });
                 }
                 text += "--------------------------------\n";
             });
 
-if (order.drinks.length) {
-    text += "EXTRAS:\n";
-
-    const drinkMap = {};
-
-    order.drinks.forEach(d => {
-        if (d.type === "qty" && d.qty) {
-            drinkMap[d.name] = (drinkMap[d.name] || 0) + d.qty;
-        } else {
-            drinkMap[d.name] = (drinkMap[d.name] || 0) + 1;
-        }
-    });
-
-    Object.entries(drinkMap).forEach(([name, qty]) => {
-        text += `• ${qty}x ${name}\n`;
-    });
-
-    text += "--------------------------------\n";
-}
-
+            // 2. Corrigindo Bebidas/Extras (Onde estava o erro principal)
+            if (order.drinks.length) {
+                text += "EXTRAS / BEBIDAS:\n";
+                order.drinks.forEach(d => {
+                    // Usando o d.qty que vem do servidor
+                    const qty = d.qty || 1;
+                    text += `• ${qty}x ${d.name}\n`;
+                });
+                text += "--------------------------------\n";
+            }
 
             try {
                 await fetch("http://192.168.15.4:3333/print", {
