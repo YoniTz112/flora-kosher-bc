@@ -436,17 +436,6 @@ function printOrder(idx) {
             } catch (err) {
                 alert("Erro ao conectar no Windows: " + err);
             }
-
-            try {
-                await fetch("http://192.168.15.4:3333/print", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ text })
-                });
-                alert("Pedido enviado para a cozinha!");
-            } catch (err) {
-                alert("Erro ao conectar no Windows: " + err);
-            }
         });
 }
 

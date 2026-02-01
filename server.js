@@ -7,7 +7,7 @@ const translateMap = {
   // acompanhamentos
   "צ’יפס בצד": "Batata frita",
   "חומוס": "Hoummus",
-  "חריף בצד": "Pimenta",
+  "חריף בצד": "Pimenta a parte",
   "סלט ישראלי": "Salada",
   "כרוב לבן": "Repolho verde",
   "כרוב סגול": "Repolho roxo",
@@ -17,6 +17,7 @@ const translateMap = {
   "תוספת קציצה": "Mais uma carne",
   "רוטב צ'יפוטלה בצד": "Molho Chipotle",
   "רוטב אלף האיים": "Molho Mil Ilhas",
+  "חריף": "Pimenta",
 
   // bebidas
   "צ’יפס": "Batata frita",
