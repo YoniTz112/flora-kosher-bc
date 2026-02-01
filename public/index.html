@@ -570,6 +570,14 @@ function removeFromCart(idx){
 }
 
 function toggleCart(){ document.getElementById('cart').classList.toggle('open'); }
+function closeAndHideCart() {
+  const cartEl = document.getElementById('cart');
+  const toggleBtn = document.getElementById('cartToggle');
+
+  cartEl.classList.remove('open'); // fecha o carrinho
+  toggleBtn.style.display = 'none'; // esconde o botão da cart
+}
+
 
 async function sendOrder(){
   const name = document.getElementById('customerName').value.trim();
@@ -578,7 +586,6 @@ async function sendOrder(){
   if(!name || !surname){ alert("אנא הכנס שם ושם משפחה"); return; }
   if(cart.length < 1){ alert("יש לבחור לפחות מנה אחת"); return; }
 
-  // Total recalculado antes de enviar para o servidor
   const total = cart.reduce((sum, i) => {
     const q = i.qty || 1;
     return sum + ((i.price + (i.toppingsPrice || 0)) * q);
@@ -586,12 +593,11 @@ async function sendOrder(){
 
   if (total < 120) { alert("❌ סכום הזמנה מינימלי הוא ₪120"); return; }
 
-  // Criamos o objeto da ordem separando comida e bebidas/shabat
   const order = { 
     name, 
     surname, 
     items: cart.filter(i => i.type === 'food'), 
-    drinks: cart.filter(i => i.type === 'drink' || i.type === 'qty'), // Shabat entra como qty
+    drinks: cart.filter(i => i.type === 'drink' || i.type === 'qty'),
     total 
   };
 
@@ -606,6 +612,9 @@ async function sendOrder(){
         cart = []; 
         sessionStorage.removeItem('sharedCart');
         updateCart();
+
+        closeAndHideCart(); // 👈 SÓ ISSO FOI ADICIONADO
+
         document.getElementById('orderMessage').style.display = 'flex';
         updateWhatsAppLink(name, surname);
     } else {
@@ -615,6 +624,7 @@ async function sendOrder(){
       alert("שגיאה בשליחת ההזמנה"); 
   }
 }
+
 
 function updateWhatsAppLink(name, surname) {
   const message = "שלום, שלחתי לכם הזמנה של אוכל על שם: " + name + " " + surname;
