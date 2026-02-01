@@ -530,7 +530,6 @@ function updateCart(){
   const cartContentDiv = document.getElementById("cartContent");
   const cartFooterDiv = document.getElementById("cartFooter");
   
-  // Salva o estado atual do carrinho no navegador
   sessionStorage.setItem('sharedCart', JSON.stringify(cart));
 
   if(cart.length === 0){
@@ -542,18 +541,27 @@ function updateCart(){
   let contentHtml = "";
   cart.forEach((item, index) => {
     const extra = item.toppings && item.toppings.length ? ` (${item.toppings.join(", ")})` : "";
-contentHtml += `
-  <div class="cart-item">
-    <button onclick="removeFromCart(${index})">X</button> ${item.name}${extra} x${item.quantity || 1} — ₪${item.price + (item.toppingsPrice || 0)}
-  </div>`;
+    const itemQty = item.qty || 1; // Usa qty para garantir consistência
+    const itemTotal = (item.price + (item.toppingsPrice || 0)) * itemQty;
+
+    contentHtml += `
+      <div class="cart-item" style="margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 4px;">
+        <button onclick="removeFromCart(${index})">X</button> 
+        <strong>${itemQty}x</strong> ${item.name}${extra} — ₪${itemTotal.toFixed(2)}
+      </div>`;
   });
 
-  const total = cart.reduce((sum, item) => sum + item.price + (item.toppingsPrice || 0), 0);
+  // Cálculo do Total Geral corrigido
+  const total = cart.reduce((sum, item) => {
+    const q = item.qty || 1;
+    return sum + ((item.price + (item.toppingsPrice || 0)) * q);
+  }, 0);
+
   cartContentDiv.innerHTML = contentHtml;
   cartFooterDiv.style.display = "block";
   cartFooterDiv.innerHTML = `
     <div style="font-size: 1.5em; font-weight: bold; margin-bottom: 10px;">סה"כ: ₪${total.toFixed(2)}</div>
-    <button style="width:100%" onclick="sendOrder()">שלח הזמנה</button>`;
+    <button style="width:100%; background-color: #28a745; color: white;" onclick="sendOrder()">שלח הזמנה</button>`;
 }
 
 function removeFromCart(idx){
@@ -566,17 +574,46 @@ function toggleCart(){ document.getElementById('cart').classList.toggle('open');
 async function sendOrder(){
   const name = document.getElementById('customerName').value.trim();
   const surname = document.getElementById('customerSurname').value.trim();
+  
   if(!name || !surname){ alert("אנא הכנס שם ושם משפחה"); return; }
   if(cart.length < 1){ alert("יש לבחור לפחות מנה אחת"); return; }
-  const total = cart.reduce((sum, i) => sum + i.price + (i.toppingsPrice || 0), 0);
+
+  // Total recalculado antes de enviar para o servidor
+  const total = cart.reduce((sum, i) => {
+    const q = i.qty || 1;
+    return sum + ((i.price + (i.toppingsPrice || 0)) * q);
+  }, 0);
+
   if (total < 120) { alert("❌ סכום הזמנה מינימלי הוא ₪120"); return; }
-  const order = { name, surname, items: cart.filter(i => i.type === 'food'), drinks: cart.filter(i => i.type === 'drink'), total };
+
+  // Criamos o objeto da ordem separando comida e bebidas/shabat
+  const order = { 
+    name, 
+    surname, 
+    items: cart.filter(i => i.type === 'food'), 
+    drinks: cart.filter(i => i.type === 'drink' || i.type === 'qty'), // Shabat entra como qty
+    total 
+  };
+
   try {
-    await fetch("/orders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(order) });
-    cart = []; updateCart();
-    document.getElementById('orderMessage').style.display = 'flex';
-    updateWhatsAppLink(name, surname);
-  } catch(err){ alert("שגיאה בשליחת ההזמנה"); }
+    const response = await fetch("/orders", { 
+      method: "POST", 
+      headers: { "Content-Type": "application/json" }, 
+      body: JSON.stringify(order) 
+    });
+    
+    if(response.ok) {
+        cart = []; 
+        sessionStorage.removeItem('sharedCart');
+        updateCart();
+        document.getElementById('orderMessage').style.display = 'flex';
+        updateWhatsAppLink(name, surname);
+    } else {
+        alert("Erro no servidor ao enviar pedido.");
+    }
+  } catch(err){ 
+      alert("שגיאה בשליחת ההזמנה"); 
+  }
 }
 
 function updateWhatsAppLink(name, surname) {
