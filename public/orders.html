@@ -392,22 +392,28 @@ function printOrder(idx) {
 
             let text = `CLIENTE: ${order.name} ${order.surname}\n`;
             text += `HORA: ${order.time ? new Date(order.time).toLocaleTimeString() : "-"}\n`;
-            text += "--------------------------------\n";
+            text += "================================\n"; // Linha dupla para o cabeçalho
             
-            // Imprime Itens Principais
+            // Imprime Itens Principais (Shawarmas, etc)
             if (order.items.length) {
-                text += "PRINCIPAIS:\n";
-                order.items.forEach((item) => {
+                order.items.forEach((item, index) => {
                     const q = item.qty || 1;
-                    text += `> ${q}x ${item.name.toUpperCase()}\n`; 
+                    text += `${q}x ${item.name.toUpperCase()}\n`; 
+                    
+                    // Toppings com um recuo para destacar
                     if (item.toppings?.length) {
-                        item.toppings.forEach(top => { text += `   + ${top}\n`; });
+                        item.toppings.forEach(top => { 
+                            text += `  [ ] ${top}\n`; 
+                        });
                     }
+
+                    // Se não for o último item, coloca o separador tracejado
+                    // Se preferir separar todos sempre, pode tirar o 'if' e deixar só a linha
+                    text += "--------------------------------\n";
                 });
-                text += "--------------------------------\n";
             }
 
-            // Imprime Bebidas / Extras / Shabat
+            // Imprime Bebidas / Extras
             if (order.drinks.length) {
                 text += "EXTRAS / BEBIDAS:\n";
                 order.drinks.forEach(d => {
@@ -416,8 +422,9 @@ function printOrder(idx) {
                 });
                 text += "--------------------------------\n";
             }
-
-            text += `TOTAL: ₪${order.total}\n`;
+            
+            // Aqui você enviaria o 'text' para a impressora
+            console.log(text); 
 
             try {
                 await fetch("http://192.168.15.4:3333/print", {
