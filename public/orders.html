@@ -178,17 +178,19 @@
                     html += "</ol>";
                 }
 
-                if (order.drinks.length > 0) {
-                    html += "<strong>Drinks:</strong><ol>";
-                    order.drinks.forEach(drink => {
-                        if (drink.type === "qty") {
-                            html += `<li>${drink.name} × ${drink.qty} - ₪${drink.price * drink.qty}</li>`;
-                        } else {
-                            html += `<li>${drink.name} - ₪${drink.price}</li>`;
-                        }
-                    });
-                    html += "</ol>";
-                }
+// Procure este trecho dentro da função renderOrders no seu orders.html
+if (order.drinks.length > 0) {
+    html += "<strong>Drinks / Shabat:</strong><ol>";
+    order.drinks.forEach(drink => {
+        // Pega a quantidade que vem do servidor, se não existir assume 1
+        const q = drink.qty || 1; 
+        const precoTotalItem = drink.price * q;
+
+        // Aqui garante que mostre "Nome x Quantidade - Valor Total"
+        html += `<li>${drink.name} × ${q} - ₪${precoTotalItem.toFixed(2)}</li>`;
+    });
+    html += "</ol>";
+}
 
                 html += `
                     <button onclick="printOrder(${idx})" style="background:black;color:white;margin-right:5px"> 🖨 Imprimir pedido </button>

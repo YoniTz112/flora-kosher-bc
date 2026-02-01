@@ -312,9 +312,17 @@ function addQtyToCart(name, price, btn){
     const qtySpan = btn.parentElement.querySelector("span");
     const qty = parseInt(qtySpan.textContent);
     if(qty === 0) return;
-    for(let i=0; i<qty; i++){
-        cart.push({ name, price, toppings: [], toppingsPrice: 0, type: "drink" });
-    }
+
+    // Em vez de fazer um loop, adicionamos UM item com a propriedade 'qty'
+    cart.push({ 
+        name: name, 
+        price: price, 
+        toppings: [], 
+        toppingsPrice: 0, 
+        type: "qty", // Para o servidor entender que tem quantidade
+        qty: qty 
+    });
+
     qtySpan.textContent = "0";
     updateCart();
     showAddedPopup();
@@ -331,17 +339,21 @@ function updateCart(){
         return;
     }
 
-    content.innerHTML = cart.map((item, i) => `
-        <div class="cart-item">
-            <button onclick="removeFromCart(${i})">X</button> ${item.name} — ₪${item.price}
-        </div>
-    `).join('');
+    // Mostra a quantidade bonitinho no carrinho do Shabat
+    content.innerHTML = cart.map((item, i) => {
+        const q = item.qty || 1;
+        return `
+            <div class="cart-item">
+                <button onclick="removeFromCart(${i})">X</button> 
+                <strong>${q}x</strong> ${item.name} — ₪${(item.price * q).toFixed(2)}
+            </div>
+        `;
+    }).join('');
 
-    const total = cart.reduce((sum, item) => sum + item.price, 0);
-    footer.innerHTML = `<div style="font-size:1.5em; font-weight:bold; margin-bottom:10px;">סה"כ: ₪${total}</div>
+    const total = cart.reduce((sum, item) => sum + (item.price * (item.qty || 1)), 0);
+    footer.innerHTML = `<div style="font-size:1.5em; font-weight:bold; margin-bottom:10px;">סה"כ: ₪${total.toFixed(2)}</div>
                         <p style="font-size:0.8em; color:#666; text-align:center;">לשליחת ההזמנה יש לחזור לדף הראשי</p>`;
 }
-
 function removeFromCart(i){ cart.splice(i,1); updateCart(); }
 function toggleCart(){ document.getElementById('cart').classList.toggle('open'); }
 function showAddedPopup(){ 
