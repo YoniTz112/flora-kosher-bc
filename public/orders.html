@@ -437,7 +437,7 @@ function printOrder(idx) {
             console.log(text); 
 
             try {
-                await fetch("http://192.168.233.84:3333/print", {
+                await fetch("http://192.168.107.84:3333/print", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ text })
