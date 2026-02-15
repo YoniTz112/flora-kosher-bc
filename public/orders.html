@@ -390,40 +390,32 @@ function printOrder(idx) {
             const order = orders[idx];
             if (!order) return;
 
-            // Comandos ESC/POS para formatação (padrão na maioria das térmicas)
-            const ESC = "\x1B";
-            const GS = "\x1D";
-            const FONT_BIG = GS + "!" + "\x11"; // Dobra altura e largura
-            const FONT_NORMAL = GS + "!" + "\x00"; // Volta ao normal
-            const BOLD_ON = ESC + "E" + "\x01";
-            const BOLD_OFF = ESC + "E" + "\x00";
-
-            let text = "";
-            
-            // Cabeçalho Grande e Negrito
-            text += FONT_BIG + BOLD_ON + `CLIENTE: ${order.name} ${order.surname}` + BOLD_OFF + FONT_NORMAL + "\n";
+            let text = `CLIENTE: ${order.name} ${order.surname}\n`;
             text += `HORA: ${order.time ? new Date(order.time).toLocaleTimeString() : "-"}\n`;
-            text += "================================\n\n";
+            text += "================================\n"; // Linha dupla para o cabeçalho
             
-            // Itens Principais (Também em tamanho grande para o cozinheiro enxergar de longe)
+            // Imprime Itens Principais (Shawarmas, etc)
             if (order.items.length) {
-                order.items.forEach((item) => {
+                order.items.forEach((item, index) => {
                     const q = item.qty || 1;
-                    text += FONT_BIG + BOLD_ON + `${q}x ${item.name.toUpperCase()}` + BOLD_OFF + FONT_NORMAL + "\n"; 
+                    text += `${q}x ${item.name.toUpperCase()}\n`; 
                     
-                    // Toppings em tamanho normal (para não ocupar papel demais)
+                    // Toppings com um recuo para destacar
                     if (item.toppings?.length) {
                         item.toppings.forEach(top => { 
                             text += `  [ ] ${top}\n`; 
                         });
                     }
+
+                    // Se não for o último item, coloca o separador tracejado
+                    // Se preferir separar todos sempre, pode tirar o 'if' e deixar só a linha
                     text += "--------------------------------\n";
                 });
             }
 
-            // Extras / Bebidas em tamanho normal
+            // Imprime Bebidas / Extras
             if (order.drinks.length) {
-                text += "\n" + BOLD_ON + "EXTRAS / BEBIDAS:" + BOLD_OFF + "\n";
+                text += "EXTRAS / BEBIDAS:\n";
                 order.drinks.forEach(d => {
                     const q = d.qty || 1;
                     text += `• ${q}x ${d.name}\n`;
@@ -431,21 +423,19 @@ function printOrder(idx) {
                 text += "--------------------------------\n";
             }
             
-            // Espaço no final para facilitar o corte
-            text += "\n\n\n";
-
+            // Aqui você enviaria o 'text' para a impressora
             console.log(text); 
 
             try {
-                await fetch("http://192.168.107.84:3333/print", {
+                await fetch("http://192.168.233.84:3333/print", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ text })
                 });
-                alert("Pedido enviado para a cozinha com letra grande!");
+                alert("Pedido enviado para a cozinha!");
             } catch (err) {
                 alert("Erro ao conectar no Windows: " + err);
-            }
+}
         });
 }
 
