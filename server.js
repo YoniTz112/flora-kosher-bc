@@ -25,6 +25,9 @@ const translateMap = {
   "קולה זירו": "Coca Zero",
   "מים": "Água",
   "סודה": "Água com gás",
+  "מים 1.5 ליטר": "Água 1.5L",
+  "קולה זירו 1.5 ליטר": "Coca Zero 1.5L",
+  "קוקה קולה 1.5 ליטר": "Coca 1.5L",
 
   // shabat
   "חלה לשבת": "Chalá de Shabat",
