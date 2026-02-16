@@ -268,8 +268,35 @@ padding-top: 10px;
 .latin-only {
   direction: ltr;
 }
+
+#busyOverlay {
+  display: none;
+  position: fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background: rgba(0,0,0,0.95);
+  color: white;
+  font-size: 2em;
+  font-weight: bold;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+  padding: 20px;
+  box-sizing: border-box;
+  flex-direction: column;
+}
+
 </style>
 </head>
+
+<div id="busyOverlay">
+  המסעדה עמוסה מאוד כרגע 🙏<br><br>
+  אנא המתינו עד לפתיחה מחדש
+</div>
+
 
 <body>
 
@@ -701,6 +728,20 @@ function changeQty(btn, delta) {
     if (qty < 0) qty = 0;
     span.textContent = qty;
 }
+
+
+function checkRestaurantStatus() {
+    const busy = localStorage.getItem("restaurantBusy") === "true";
+    const overlay = document.getElementById("busyOverlay");
+
+    overlay.style.display = busy ? "flex" : "none";
+}
+
+// Verifica ao carregar
+window.addEventListener("load", checkRestaurantStatus);
+
+// Verifica constantemente caso você ligue pelo orders
+setInterval(checkRestaurantStatus, 1000);
 
 </script>
 
