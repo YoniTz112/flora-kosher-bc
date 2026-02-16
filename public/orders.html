@@ -125,8 +125,14 @@
         <button id="toggleSystem">Ativar/Desativar Sistema de Pedidos</button>
         <button id="shabatOn">Ativar Shabat</button>
         <button id="shabatOff">Desativar Shabat</button>
-        <button id="restaurantBusyBtn" style="background-color:#ff0000; color:white;">
+<button id="busyOn" style="background:red;color:white;">
   סגור זמנית
+</button>
+
+<button id="busyOff" style="background:green;color:white;">
+  פתח מחדש
+</button>
+
 </button>
 
     </div>
@@ -140,16 +146,14 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
+document.getElementById("busyOn").onclick = () => {
+  fetch("/restaurant/busy/on", { method: "POST" });
+};
 
-        document.getElementById("restaurantBusyBtn").addEventListener("click", () => {
-    const isBusy = localStorage.getItem("restaurantBusy") === "true";
+document.getElementById("busyOff").onclick = () => {
+  fetch("/restaurant/busy/off", { method: "POST" });
+};
 
-    if (isBusy) {
-        localStorage.setItem("restaurantBusy", "false");
-    } else {
-        localStorage.setItem("restaurantBusy", "true");
-    }
-});
 
         async function fetchOrders() {
             try {

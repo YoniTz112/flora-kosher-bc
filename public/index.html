@@ -730,18 +730,19 @@ function changeQty(btn, delta) {
 }
 
 
-function checkRestaurantStatus() {
-    const busy = localStorage.getItem("restaurantBusy") === "true";
-    const overlay = document.getElementById("busyOverlay");
-
-    overlay.style.display = busy ? "flex" : "none";
+async function checkBusyStatus() {
+  try {
+    const res = await fetch("/restaurant/busy");
+    const data = await res.json();
+    document.getElementById("busyOverlay").style.display =
+      data.active ? "flex" : "none";
+  } catch (err) {
+    console.error("Erro ao verificar estado do restaurante");
+  }
 }
 
-// Verifica ao carregar
-window.addEventListener("load", checkRestaurantStatus);
-
-// Verifica constantemente caso você ligue pelo orders
-setInterval(checkRestaurantStatus, 1000);
+window.addEventListener("load", checkBusyStatus);
+setInterval(checkBusyStatus, 2000);
 
 </script>
 

@@ -51,6 +51,55 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+// -------------------- BUSY SYSTEM PERSISTENCE --------------------
+const BUSY_STATE_FILE = path.join(__dirname, "busy_state.json");
+
+function readBusyState() {
+  try {
+    if (fs.existsSync(BUSY_STATE_FILE)) {
+      const data = fs.readFileSync(BUSY_STATE_FILE, "utf8");
+      return JSON.parse(data).active;
+    }
+  } catch (err) {
+    console.error("Erro ao ler estado BUSY:", err);
+  }
+  return false;
+}
+
+function writeBusyState(active) {
+  try {
+    fs.writeFileSync(BUSY_STATE_FILE, JSON.stringify({ active }), "utf8");
+    return true;
+  } catch (err) {
+    console.error("Erro ao escrever estado BUSY:", err);
+    return false;
+  }
+}
+
+let restaurantBusy = readBusyState();
+
+// Ver status
+app.get("/restaurant/busy", (req, res) => {
+  res.json({ active: restaurantBusy });
+});
+
+// Ativar
+app.post("/restaurant/busy/on", (req, res) => {
+  restaurantBusy = true;
+  writeBusyState(restaurantBusy);
+  console.log("🔴 Restaurante marcado como LOTADO");
+  res.json({ success: true, active: restaurantBusy });
+});
+
+// Desativar
+app.post("/restaurant/busy/off", (req, res) => {
+  restaurantBusy = false;
+  writeBusyState(restaurantBusy);
+  console.log("🟢 Restaurante reaberto");
+  res.json({ success: true, active: restaurantBusy });
+});
+
+
 // -------------------- SHABAT SYSTEM PERSISTENCE --------------------
 const SHABAT_STATE_FILE = path.join(__dirname, "shabat_state.json");
 
